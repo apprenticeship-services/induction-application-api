@@ -1,0 +1,5 @@
+dist
+node_modules
+.husky
+.DS_Store
+coverage
