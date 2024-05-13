@@ -2,21 +2,25 @@ import { HttpRequest } from '@/presentation/protocols'
 import { RegisterAdminAccountController } from './register-admin-controller'
 import { RegisterAdminAccount, RegisterAdminAccountParams } from '@/domain/use-cases/register-admin-account'
 import { AccountModel } from '@/domain/models/account'
-import { forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
-import { ServerError } from '@/presentation/errors/server-error'
+import { Validator } from '@/presentation/protocols/validator'
+import { InvalidParams } from '@/presentation/errors/invalid-params'
 
 type Sut = {
     sut: RegisterAdminAccountController,
-    registerAdminAccountStub: any
+    registerAdminAccountStub: RegisterAdminAccount,
+    validatorStub: Validator
 }
 
 const makeSut = (): Sut => {
   const registerAdminAccountStub = makeRegisterAdminAccountSub()
-  const sut = new RegisterAdminAccountController(registerAdminAccountStub)
+  const validatorStub = makeValidatorStub()
+  const sut = new RegisterAdminAccountController(registerAdminAccountStub, validatorStub)
   return {
     sut,
-    registerAdminAccountStub
+    registerAdminAccountStub,
+    validatorStub
   }
 }
 
@@ -27,6 +31,15 @@ const makeRegisterAdminAccountSub = (): RegisterAdminAccount => {
     }
   }
   return new RegisterAdminAccountStub()
+}
+
+const makeValidatorStub = (): Validator => {
+  class ValidatorStub implements Validator {
+    validate (input: string): Error {
+      return null
+    }
+  }
+  return new ValidatorStub()
 }
 
 const fakeRequest = (): HttpRequest => ({
@@ -58,6 +71,13 @@ describe('RegisterAdminController', () => {
     jest.spyOn(registerAdminAccountStub, 'register').mockReturnValueOnce(Promise.resolve(null))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(forbidden(new AlreadyExists('email')))
+  })
+
+  test('Should return 400 if Validator throws error', async () => {
+    const { sut, validatorStub } = makeSut()
+    jest.spyOn(validatorStub, 'validate').mockReturnValueOnce(new InvalidParams('email'))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(badRequest(new InvalidParams('email')))
   })
 
   test('Should return 500 if RegisterAdminAccount throws', async () => {
