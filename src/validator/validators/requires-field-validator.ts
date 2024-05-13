@@ -10,5 +10,6 @@ export class RequiredFieldValidator implements Validator {
     if (!input[this.requiredField]) {
       return new MissingParamError(this.requiredField)
     }
+    return null
   }
 }
