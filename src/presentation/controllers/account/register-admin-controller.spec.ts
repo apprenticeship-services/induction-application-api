@@ -35,7 +35,7 @@ const makeRegisterAdminAccountSub = (): RegisterAdminAccount => {
 
 const makeValidatorStub = (): Validator => {
   class ValidatorStub implements Validator {
-    validate (input: string): Error {
+    validate (input: object): Error {
       return null
     }
   }

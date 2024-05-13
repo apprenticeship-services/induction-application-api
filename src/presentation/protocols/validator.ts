@@ -1,3 +1,3 @@
 export interface Validator{
-    validate(input:string): Error
+    validate(input:object): Error
 }
