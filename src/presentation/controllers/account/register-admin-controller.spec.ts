@@ -1,6 +1,6 @@
 import { HttpRequest } from '@/presentation/protocols'
 import { RegisterAdminAccountController } from './register-admin-controller'
-import { RegisterAdminAccount, RegisterAdminAccountParams } from '@/domain/use-cases/register-admin-account'
+import { RegisterAccount, RegisterAccountParams } from '@/domain/use-cases/register-admin-account'
 import { AccountModel } from '@/domain/models/account'
 import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
@@ -9,7 +9,7 @@ import { InvalidParams } from '@/presentation/errors/invalid-params'
 
 type Sut = {
     sut: RegisterAdminAccountController,
-    registerAdminAccountStub: RegisterAdminAccount,
+    registerAdminAccountStub: RegisterAccount,
     validatorStub: Validator
 }
 
@@ -24,9 +24,9 @@ const makeSut = (): Sut => {
   }
 }
 
-const makeRegisterAdminAccountSub = (): RegisterAdminAccount => {
-  class RegisterAdminAccountStub implements RegisterAdminAccount {
-    async register (credentials: RegisterAdminAccountParams): Promise<AccountModel> {
+const makeRegisterAdminAccountSub = (): RegisterAccount => {
+  class RegisterAdminAccountStub implements RegisterAccount {
+    async register (credentials: RegisterAccountParams): Promise<AccountModel> {
       return Promise.resolve(fakeAccountModel())
     }
   }
@@ -54,6 +54,7 @@ const fakeAdminAccount = () => ({
 const fakeAccountModel = (): AccountModel => ({
   _id: 'any_id',
   name: 'any_name',
+  role: 'any_role',
   email: 'any_email@hotmail.com',
   password: 'any_password'
 })

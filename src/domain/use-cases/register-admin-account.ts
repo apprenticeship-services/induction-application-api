@@ -1,7 +1,7 @@
 import { AccountModel } from '../models/account'
 
-export type RegisterAdminAccountParams = Omit<AccountModel, '_id'| 'password'>
+export type RegisterAccountParams = Omit<AccountModel, '_id'| 'password'>
 
-export interface RegisterAdminAccount{
-    register(credentials: RegisterAdminAccountParams) : Promise<AccountModel>
+export interface RegisterAccount{
+    register(credentials: RegisterAccountParams) : Promise<AccountModel>
 }

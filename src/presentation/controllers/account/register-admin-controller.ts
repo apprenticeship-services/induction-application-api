@@ -1,4 +1,4 @@
-import { RegisterAdminAccount } from '@/domain/use-cases/register-admin-account'
+import { RegisterAccount } from '@/domain/use-cases/register-admin-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
@@ -6,7 +6,7 @@ import { Validator } from '@/presentation/protocols/validator'
 
 export class RegisterAdminAccountController implements Controller {
   constructor (
-    private readonly registerAdminAccount: RegisterAdminAccount,
+    private readonly registerAdminAccount: RegisterAccount,
     private readonly validator: Validator) {
     this.registerAdminAccount = registerAdminAccount
     this.validator = validator
