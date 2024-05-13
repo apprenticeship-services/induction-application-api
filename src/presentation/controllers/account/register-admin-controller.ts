@@ -1,6 +1,6 @@
 import { RegisterAdminAccount } from '@/domain/use-cases/register-admin-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
-import { forbidden } from '@/presentation/helpers/http-helper'
+import { forbidden, noContent } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class RegisterAdminAccountController implements Controller {
@@ -15,7 +15,8 @@ export class RegisterAdminAccountController implements Controller {
       if (!account) {
         return forbidden(new AlreadyExists('email'))
       }
-      return null
+
+      return noContent()
     } catch (e) {
 
     }
