@@ -2,7 +2,7 @@ import { HttpRequest } from '@/presentation/protocols'
 import { RegisterAdminAccountController } from './register-admin-controller'
 import { RegisterAdminAccount, RegisterAdminAccountParams } from '@/domain/use-cases/register-admin-account'
 import { AccountModel } from '@/domain/models/account'
-import { forbidden } from '@/presentation/helpers/http-helper'
+import { forbidden, noContent } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 
 type Sut = {
@@ -57,5 +57,11 @@ describe('RegisterAdminController', () => {
     jest.spyOn(registerAdminAccountStub, 'register').mockReturnValueOnce(Promise.resolve(null))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(forbidden(new AlreadyExists('email')))
+  })
+
+  test('Should return 204 on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(noContent())
   })
 })
