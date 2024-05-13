@@ -2,21 +2,25 @@ import { RegisterAccountRepository, RegisterAccountRepositoryParams } from '@/da
 import { DbRegisterAdminAccount } from './db-register-admin-account'
 import { AccountModel } from '@/domain/models/account'
 import { Generator } from '@/data/protocols/cryptography/generator'
+import { Hasher } from '@/data/protocols/cryptography/hasher'
 
 type Sut = {
     sut: DbRegisterAdminAccount,
     registerAccountRepositoryStub: RegisterAccountRepository,
-    passwordGeneratorStub: Generator
+    passwordGeneratorStub: Generator,
+    hasherStub: Hasher
 }
 
 const makeSut = (): Sut => {
   const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
   const passwordGeneratorStub = makePasswordGeneratorStub()
-  const sut = new DbRegisterAdminAccount(registerAccountRepositoryStub, passwordGeneratorStub)
+  const hasherStub = makeHasherStub()
+  const sut = new DbRegisterAdminAccount(passwordGeneratorStub, hasherStub, registerAccountRepositoryStub)
   return {
     sut,
     registerAccountRepositoryStub,
-    passwordGeneratorStub
+    passwordGeneratorStub,
+    hasherStub
   }
 }
 
@@ -36,6 +40,15 @@ const makePasswordGeneratorStub = (): Generator => {
     }
   }
   return new PasswordGeneratorStub()
+}
+
+const makeHasherStub = (): Hasher => {
+  class HasherStub implements Hasher {
+    async hash (value: string): Promise<string> {
+      return Promise.resolve('hashed_password')
+    }
+  }
+  return new HasherStub()
 }
 
 const fakeAccountModel = (): AccountModel => ({
@@ -59,7 +72,10 @@ describe('DbRegisterAdminAccount', () => {
     const { sut, registerAccountRepositoryStub } = makeSut()
     const repoSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
     await sut.register(fakeCredentials())
-    expect(repoSpy).toHaveBeenCalledWith(fakeCredentials())
+    expect(repoSpy).toHaveBeenCalledWith({
+      ...fakeCredentials(),
+      password: 'hashed_password'
+    })
   })
 
   test('Should call PasswordGenerator', async () => {
@@ -67,5 +83,12 @@ describe('DbRegisterAdminAccount', () => {
     const generatorSpy = jest.spyOn(passwordGeneratorStub, 'generate')
     await sut.register(fakeCredentials())
     expect(generatorSpy).toHaveBeenCalledTimes(1)
+  })
+
+  test('Should call Hasher with generated password ', async () => {
+    const { sut, hasherStub } = makeSut()
+    const hasherSpy = jest.spyOn(hasherStub, 'hash')
+    await sut.register(fakeCredentials())
+    expect(hasherSpy).toHaveBeenCalledWith('any_password')
   })
 })
