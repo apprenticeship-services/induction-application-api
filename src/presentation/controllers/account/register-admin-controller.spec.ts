@@ -1,6 +1,6 @@
 import { HttpRequest } from '@/presentation/protocols'
 import { RegisterAdminAccountController } from './register-admin-controller'
-import { RegisterAccount, RegisterAccountParams } from '@/domain/use-cases/register-admin-account'
+import { RegisterAccount, RegisterAccountParams } from '@/domain/use-cases/register-account'
 import { AccountModel } from '@/domain/models/account'
 import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
@@ -56,7 +56,8 @@ const fakeAccountModel = (): AccountModel => ({
   name: 'any_name',
   role: 'any_role',
   email: 'any_email@hotmail.com',
-  password: 'any_password'
+  password: 'any_password',
+  createdAt: new Date()
 })
 
 describe('RegisterAdminController', () => {

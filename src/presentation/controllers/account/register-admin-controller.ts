@@ -1,4 +1,4 @@
-import { RegisterAccount } from '@/domain/use-cases/register-admin-account'
+import { RegisterAccount } from '@/domain/use-cases/register-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
