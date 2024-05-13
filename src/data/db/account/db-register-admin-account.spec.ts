@@ -3,24 +3,28 @@ import { DbRegisterAdminAccount } from './db-register-admin-account'
 import { AccountModel } from '@/domain/models/account'
 import { Generator } from '@/data/protocols/cryptography/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
+import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
 
 type Sut = {
     sut: DbRegisterAdminAccount,
     registerAccountRepositoryStub: RegisterAccountRepository,
     passwordGeneratorStub: Generator,
-    hasherStub: Hasher
+    hasherStub: Hasher,
+    loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
 }
 
 const makeSut = (): Sut => {
-  const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
+  const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepositoryStub()
   const passwordGeneratorStub = makePasswordGeneratorStub()
   const hasherStub = makeHasherStub()
-  const sut = new DbRegisterAdminAccount(passwordGeneratorStub, hasherStub, registerAccountRepositoryStub)
+  const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
+  const sut = new DbRegisterAdminAccount(loadAccountByEmailRepositoryStub, passwordGeneratorStub, hasherStub, registerAccountRepositoryStub)
   return {
     sut,
     registerAccountRepositoryStub,
     passwordGeneratorStub,
-    hasherStub
+    hasherStub,
+    loadAccountByEmailRepositoryStub
   }
 }
 
@@ -49,6 +53,15 @@ const makeHasherStub = (): Hasher => {
     }
   }
   return new HasherStub()
+}
+
+const makeLoadAccountByEmailRepositoryStub = (): LoadAccountByEmailRepository => {
+  class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
+    async loadByEmail (email: string): Promise<AccountModel> {
+      return null
+    }
+  }
+  return new LoadAccountByEmailRepositoryStub()
 }
 
 const fakeAccountModel = (): AccountModel => ({
@@ -90,5 +103,12 @@ describe('DbRegisterAdminAccount', () => {
     const hasherSpy = jest.spyOn(hasherStub, 'hash')
     await sut.register(fakeCredentials())
     expect(hasherSpy).toHaveBeenCalledWith('any_password')
+  })
+
+  test('Should call LoadAccountByEmailRepository with correct email', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    const loadByEmailSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+    await sut.register(fakeCredentials())
+    expect(loadByEmailSpy).toHaveBeenCalledWith(fakeCredentials().email)
   })
 })
