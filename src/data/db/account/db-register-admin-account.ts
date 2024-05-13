@@ -20,10 +20,13 @@ export class DbRegisterAdminAccount implements RegisterAccount {
   }
 
   async register (credentials: RegisterAccountParams): Promise<AccountModel> {
-    const isAccount = this.loadAccountByEmailRepository.loadByEmail(credentials.email)
+    const isAccount = await this.loadAccountByEmailRepository.loadByEmail(credentials.email)
+    if (isAccount) {
+      return null
+    }
     const password = this.passwordGenerator.generate()
     const hashedPassword = await this.hasher.hash(password)
     const account = await this.registerAccountRepository.register({ ...credentials, password: hashedPassword, role: this.role })
-    return null
+    return account
   }
 }
