@@ -5,7 +5,7 @@ import { AccountModel } from '@/domain/models/account'
 import { badRequest, forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 import { Validator } from '@/presentation/protocols/validator'
-import { InvalidParams } from '@/presentation/errors/invalid-params'
+import { InvalidParamError } from '@/presentation/errors/invalid-params'
 
 type Sut = {
     sut: RegisterAdminAccountController,
@@ -77,9 +77,9 @@ describe('RegisterAdminController', () => {
 
   test('Should return 400 if Validator throws error', async () => {
     const { sut, validatorStub } = makeSut()
-    jest.spyOn(validatorStub, 'validate').mockReturnValueOnce(new InvalidParams('email'))
+    jest.spyOn(validatorStub, 'validate').mockReturnValueOnce(new InvalidParamError('email'))
     const response = await sut.handle(fakeRequest())
-    expect(response).toEqual(badRequest(new InvalidParams('email')))
+    expect(response).toEqual(badRequest(new InvalidParamError('email')))
   })
 
   test('Should return 500 if RegisterAdminAccount throws', async () => {
