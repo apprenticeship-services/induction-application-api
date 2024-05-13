@@ -40,11 +40,10 @@
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
     "express": "^4.19.2",
     "module-alias": "^2.2.3"
   },
-  "_moduleAliases":{
-    "@" :"dist"
+  "_moduleAliases": {
+    "@": "dist"
   }
 }
