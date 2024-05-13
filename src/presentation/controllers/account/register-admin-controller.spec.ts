@@ -2,6 +2,8 @@ import { HttpRequest } from '@/presentation/protocols'
 import { RegisterAdminAccountController } from './register-admin-controller'
 import { RegisterAdminAccount, RegisterAdminAccountParams } from '@/domain/use-cases/register-admin-account'
 import { AccountModel } from '@/domain/models/account'
+import { forbidden } from '@/presentation/helpers/http-helper'
+import { AlreadyExists } from '@/presentation/errors/already-exists'
 
 type Sut = {
     sut: RegisterAdminAccountController,
@@ -48,5 +50,12 @@ describe('RegisterAdminController', () => {
     const registerSpy = jest.spyOn(registerAdminAccountStub, 'register')
     await sut.handle(fakeRequest())
     expect(registerSpy).toHaveBeenCalledWith(fakeAdminAccount())
+  })
+
+  test('Should return error 403 if email already exists and RegisterAdminAccount returns null', async () => {
+    const { sut, registerAdminAccountStub } = makeSut()
+    jest.spyOn(registerAdminAccountStub, 'register').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(forbidden(new AlreadyExists('email')))
   })
 })
