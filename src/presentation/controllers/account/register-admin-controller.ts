@@ -1,6 +1,6 @@
 import { RegisterAdminAccount } from '@/domain/use-cases/register-admin-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
-import { forbidden, noContent } from '@/presentation/helpers/http-helper'
+import { forbidden, noContent, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class RegisterAdminAccountController implements Controller {
@@ -18,7 +18,7 @@ export class RegisterAdminAccountController implements Controller {
 
       return noContent()
     } catch (e) {
-
+      return serverError(e)
     }
   }
 }
