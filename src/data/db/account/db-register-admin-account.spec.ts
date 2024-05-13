@@ -1,29 +1,41 @@
-import { RegisterAccountRepository } from '@/data/protocols/db/register-account-repository'
+import { RegisterAccountRepository, RegisterAccountRepositoryParams } from '@/data/protocols/db/register-account-repository'
 import { DbRegisterAdminAccount } from './db-register-admin-account'
 import { AccountModel } from '@/domain/models/account'
-import { RegisterAccountParams } from '@/domain/use-cases/register-account'
+import { Generator } from '@/data/protocols/cryptography/generator'
 
 type Sut = {
     sut: DbRegisterAdminAccount,
-    registerAccountRepositoryStub: RegisterAccountRepository
+    registerAccountRepositoryStub: RegisterAccountRepository,
+    passwordGeneratorStub: Generator
 }
 
 const makeSut = (): Sut => {
   const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
-  const sut = new DbRegisterAdminAccount(registerAccountRepositoryStub)
+  const passwordGeneratorStub = makePasswordGeneratorStub()
+  const sut = new DbRegisterAdminAccount(registerAccountRepositoryStub, passwordGeneratorStub)
   return {
     sut,
-    registerAccountRepositoryStub
+    registerAccountRepositoryStub,
+    passwordGeneratorStub
   }
 }
 
 const makeRegisterAccountRepositoryStub = (): RegisterAccountRepository => {
   class RegisterAccountRepositoryStub implements RegisterAccountRepository {
-    register (credentials: RegisterAccountParams): Promise<AccountModel> {
+    register (credentials: RegisterAccountRepositoryParams): Promise<AccountModel> {
       return Promise.resolve(fakeAccountModel())
     }
   }
   return new RegisterAccountRepositoryStub()
+}
+
+const makePasswordGeneratorStub = (): Generator => {
+  class PasswordGeneratorStub implements Generator {
+    generate (): string {
+      return 'any_password'
+    }
+  }
+  return new PasswordGeneratorStub()
 }
 
 const fakeAccountModel = (): AccountModel => ({
@@ -35,9 +47,11 @@ const fakeAccountModel = (): AccountModel => ({
   createdAt: new Date()
 })
 
-const fakeCredentials = (): RegisterAccountParams => ({
+const fakeCredentials = (): RegisterAccountRepositoryParams => ({
   name: 'any_name',
-  email: 'any_email@hotmail.com'
+  email: 'any_email@hotmail.com',
+  password: 'any_password',
+  role: 'admin'
 })
 
 describe('DbRegisterAdminAccount', () => {
@@ -46,5 +60,12 @@ describe('DbRegisterAdminAccount', () => {
     const repoSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
     await sut.register(fakeCredentials())
     expect(repoSpy).toHaveBeenCalledWith(fakeCredentials())
+  })
+
+  test('Should call PasswordGenerator', async () => {
+    const { sut, passwordGeneratorStub } = makeSut()
+    const generatorSpy = jest.spyOn(passwordGeneratorStub, 'generate')
+    await sut.register(fakeCredentials())
+    expect(generatorSpy).toHaveBeenCalledTimes(1)
   })
 })
