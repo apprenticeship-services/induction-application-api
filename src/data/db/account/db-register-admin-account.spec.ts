@@ -154,6 +154,7 @@ describe('DbRegisterAdminAccount', () => {
     const emailServiceSpy = jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail')
     await sut.register(fakeCredentials())
     expect(emailServiceSpy).toHaveBeenCalledWith({
+      name: fakeCredentials().name,
       emailTo: fakeCredentials().email,
       password: fakeCredentials().password,
       role: fakeCredentials().role

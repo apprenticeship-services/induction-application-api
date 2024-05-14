@@ -37,6 +37,7 @@ export class DbRegisterAdminAccount implements RegisterAccount {
     })
 
     await this.registrationEmailService.sendRegistrationMail({
+      name: account.name,
       emailTo: account.email,
       password,
       role: account.role
