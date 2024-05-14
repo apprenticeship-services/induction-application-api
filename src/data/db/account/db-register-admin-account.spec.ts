@@ -1,7 +1,7 @@
 import { RegisterAccountRepository, RegisterAccountRepositoryParams } from '@/data/protocols/db/register-account-repository'
 import { DbRegisterAdminAccount } from './db-register-admin-account'
 import { AccountModel } from '@/domain/models/account'
-import { Generator } from '@/data/protocols/cryptography/generator'
+import { Generator } from '@/data/protocols/generator/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
 import MockDate from 'mockdate'
