@@ -40,6 +40,20 @@ describe('Register Admin Route', () => {
           })
           .expect(400)
       })
+
+      test('Should return Forbidden Error if email is already in use', async () => {
+        await accountsCollection.insertOne({
+          name: 'any_name',
+          email: 'registered_email@hotmail.com'
+        })
+        await request(app)
+          .post('/api/register/admin')
+          .send({
+            name: 'any_name',
+            email: 'registered_email@hotmail.com'
+          })
+          .expect(403)
+      })
     })
   })
 })
