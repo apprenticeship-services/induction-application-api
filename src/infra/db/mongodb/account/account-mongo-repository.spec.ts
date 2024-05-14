@@ -40,4 +40,12 @@ describe('Account Mongo Repository', () => {
       expect(account.createdAt).toEqual(fakeAccountData().createdAt)
     })
   })
+
+  describe('Method: loadByEmail()', () => {
+    test('Should return null if email is not registered', async () => {
+      const sut = new AccountMongoRepository()
+      const account = await sut.loadByEmail('fake_email@hotmail.com')
+      expect(account).toBeNull()
+    })
+  })
 })
