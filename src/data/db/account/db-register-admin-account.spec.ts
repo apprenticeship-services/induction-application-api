@@ -5,13 +5,15 @@ import { Generator } from '@/data/protocols/generator/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
 import MockDate from 'mockdate'
+import { RegistrationEmailService, RegistrationEmailServiceParams } from '@/data/protocols/email/registration-email-service'
 
 type Sut = {
     sut: DbRegisterAdminAccount,
     registerAccountRepositoryStub: RegisterAccountRepository,
     passwordGeneratorStub: Generator,
     hasherStub: Hasher,
-    loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
+    loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository,
+    registrationEmailServiceStub: RegistrationEmailService
 }
 
 const makeSut = (): Sut => {
@@ -19,13 +21,20 @@ const makeSut = (): Sut => {
   const passwordGeneratorStub = makePasswordGeneratorStub()
   const hasherStub = makeHasherStub()
   const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
-  const sut = new DbRegisterAdminAccount(loadAccountByEmailRepositoryStub, passwordGeneratorStub, hasherStub, registerAccountRepositoryStub)
+  const registrationEmailServiceStub = makeRegistrationEmailServiceStub()
+  const sut = new DbRegisterAdminAccount(
+    loadAccountByEmailRepositoryStub,
+    passwordGeneratorStub,
+    hasherStub,
+    registerAccountRepositoryStub,
+    registrationEmailServiceStub)
   return {
     sut,
     registerAccountRepositoryStub,
     passwordGeneratorStub,
     hasherStub,
-    loadAccountByEmailRepositoryStub
+    loadAccountByEmailRepositoryStub,
+    registrationEmailServiceStub
   }
 }
 
@@ -65,11 +74,20 @@ const makeLoadAccountByEmailRepositoryStub = (): LoadAccountByEmailRepository =>
   return new LoadAccountByEmailRepositoryStub()
 }
 
+const makeRegistrationEmailServiceStub = (): RegistrationEmailService => {
+  class RegistrationEmailServiceStub implements RegistrationEmailService {
+    async sendRegistrationMail (data: RegistrationEmailServiceParams): Promise<void> {
+      return Promise.resolve(null)
+    }
+  }
+  return new RegistrationEmailServiceStub()
+}
+
 const fakeAccountModel = (): AccountModel => ({
   _id: 'any_id',
   name: 'any_name',
   email: 'any_email@hotmail.com',
-  role: 'any_role',
+  role: 'admin',
   password: 'hashed_password',
   createdAt: new Date()
 })
@@ -129,5 +147,16 @@ describe('DbRegisterAdminAccount', () => {
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(fakeAccountModel()))
     const account = await sut.register(fakeCredentials())
     expect(account).toBeNull()
+  })
+
+  test('Should call RegistrationEmailService with correct values', async () => {
+    const { sut, registrationEmailServiceStub } = makeSut()
+    const emailServiceSpy = jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail')
+    await sut.register(fakeCredentials())
+    expect(emailServiceSpy).toHaveBeenCalledWith({
+      emailTo: fakeCredentials().email,
+      password: fakeCredentials().password,
+      role: fakeCredentials().role
+    })
   })
 })
