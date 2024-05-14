@@ -10,6 +10,7 @@ const config = {
     '!<rootDir>/src/main/**',
     '!**/test/**'],
   coveragePathIgnorePatterns: [
+    'index.ts',
     '.+-protocols.ts'
   ],
   coverageDirectory: 'coverage',
