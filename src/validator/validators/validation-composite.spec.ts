@@ -42,4 +42,12 @@ describe('Validator Composite', () => {
     const isError = sut.validate(fakeInput())
     expect(isError).toEqual(new InvalidParamError('email'))
   })
+
+  test('Should return first error encountered', () => {
+    const { sut, validatorsStub } = makeSut()
+    jest.spyOn(validatorsStub[0], 'validate').mockReturnValueOnce(new Error())
+    jest.spyOn(validatorsStub[1], 'validate').mockReturnValueOnce(new InvalidParamError('email'))
+    const isError = sut.validate(fakeInput())
+    expect(isError).toEqual(new Error())
+  })
 })
