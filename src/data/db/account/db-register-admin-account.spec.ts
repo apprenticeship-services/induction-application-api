@@ -4,6 +4,7 @@ import { AccountModel } from '@/domain/models/account'
 import { Generator } from '@/data/protocols/cryptography/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
+import MockDate from 'mockdate'
 
 type Sut = {
     sut: DbRegisterAdminAccount,
@@ -77,10 +78,14 @@ const fakeCredentials = (): RegisterAccountRepositoryParams => ({
   name: 'any_name',
   email: 'any_email@hotmail.com',
   password: 'any_password',
-  role: 'admin'
+  role: 'admin',
+  createdAt: new Date()
 })
 
 describe('DbRegisterAdminAccount', () => {
+  beforeAll(() => MockDate.set(new Date()))
+  afterAll(() => MockDate.reset())
+
   test('Should call RegisterAccountRepository with correct values ', async () => {
     const { sut, registerAccountRepositoryStub } = makeSut()
     const repoSpy = jest.spyOn(registerAccountRepositoryStub, 'register')

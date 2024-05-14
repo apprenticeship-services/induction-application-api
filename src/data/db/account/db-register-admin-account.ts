@@ -26,7 +26,12 @@ export class DbRegisterAdminAccount implements RegisterAccount {
     }
     const password = this.passwordGenerator.generate()
     const hashedPassword = await this.hasher.hash(password)
-    const account = await this.registerAccountRepository.register({ ...credentials, password: hashedPassword, role: this.role })
+    const account = await this.registerAccountRepository.register({
+      ...credentials,
+      password: hashedPassword,
+      role: this.role,
+      createdAt: new Date()
+    })
     return account
   }
 }
