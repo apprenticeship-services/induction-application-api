@@ -159,4 +159,11 @@ describe('DbRegisterAdminAccount', () => {
       role: fakeCredentials().role
     })
   })
+
+  test('Should throw if RegistrationEmailService throws ', async () => {
+    const { sut, registrationEmailServiceStub } = makeSut()
+    jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeCredentials())
+    expect(account).rejects.toThrow()
+  })
 })
