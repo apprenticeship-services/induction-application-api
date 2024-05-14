@@ -3,7 +3,7 @@ import env from '@/main/config/env'
 export class NodemailerHelper {
   static transporter: Transporter = null
 
-  static init () {
+  static initMail () {
     this.transporter = nodemailer.createTransport({
       service: env.emailService,
       auth: {

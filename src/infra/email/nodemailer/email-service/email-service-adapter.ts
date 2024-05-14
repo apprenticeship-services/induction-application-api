@@ -18,7 +18,7 @@ export class EmailServiceAdapter implements RegistrationEmailService {
         subject: template.header,
         html: template.content
       }
-      NodemailerHelper.init().sendMail(message, (error) => {
+      NodemailerHelper.initMail().sendMail(message, (error) => {
         if (error) {
           reject(error)
         }
