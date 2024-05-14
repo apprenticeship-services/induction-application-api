@@ -7,7 +7,7 @@ export class RequiredFieldValidator implements Validator {
   }
 
   validate (input: object): Error {
-    if (!input[this.requiredField]) {
+    if (!input[this.requiredField]?.toString().trim()) {
       return new MissingParamError(this.requiredField)
     }
     return null
