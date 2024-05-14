@@ -47,5 +47,13 @@ describe('Account Mongo Repository', () => {
       const account = await sut.loadByEmail('fake_email@hotmail.com')
       expect(account).toBeNull()
     })
+
+    test('Should return account if email is found', async () => {
+      const sut = new AccountMongoRepository()
+      await accountsCollection.insertOne(fakeAccountData())
+      const account = await sut.loadByEmail(fakeAccountData().email)
+      console.log(account)
+      expect(account).toBeTruthy()
+    })
   })
 })
