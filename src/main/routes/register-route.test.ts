@@ -23,6 +23,15 @@ describe('Register Admin Route', () => {
           })
           .expect(204)
       })
+
+      test('Should return BadRequest if name is not provided during registration', async () => {
+        await request(app)
+          .post('/api/register/admin')
+          .send({
+            email: 'admin_email@hotmail.com'
+          })
+          .expect(400)
+      })
     })
   })
 })
