@@ -123,4 +123,11 @@ describe('DbRegisterAdminAccount', () => {
     const response = sut.register(fakeCredentials())
     expect(response).rejects.toThrow()
   })
+
+  test('Should return null if LoadAccountByEmailRepository finds an account', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(fakeAccountModel()))
+    const account = await sut.register(fakeCredentials())
+    expect(account).toBeNull()
+  })
 })
