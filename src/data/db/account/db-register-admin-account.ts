@@ -4,6 +4,7 @@ import { RegisterAccount, RegisterAccountParams } from '@/domain/use-cases/regis
 import { Generator } from '@/data/protocols/generator/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
+import { RegistrationEmailService } from '@/data/protocols/email/registration-email-service'
 
 export class DbRegisterAdminAccount implements RegisterAccount {
   private readonly role = 'admin'
@@ -11,12 +12,14 @@ export class DbRegisterAdminAccount implements RegisterAccount {
     private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository,
     private readonly passwordGenerator: Generator,
     private readonly hasher: Hasher,
-    private readonly registerAccountRepository: RegisterAccountRepository
+    private readonly registerAccountRepository: RegisterAccountRepository,
+    private readonly registrationEmailService: RegistrationEmailService
   ) {
     this.loadAccountByEmailRepository = loadAccountByEmailRepository
     this.passwordGenerator = passwordGenerator
     this.hasher = hasher
     this.registerAccountRepository = registerAccountRepository
+    this.registrationEmailService = registrationEmailService
   }
 
   async register (credentials: RegisterAccountParams): Promise<AccountModel> {
@@ -31,6 +34,12 @@ export class DbRegisterAdminAccount implements RegisterAccount {
       password: hashedPassword,
       role: this.role,
       createdAt: new Date()
+    })
+
+    await this.registrationEmailService.sendRegistrationMail({
+      emailTo: account.email,
+      password,
+      role: account.role
     })
     return account
   }
