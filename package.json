@@ -13,6 +13,7 @@
     "test:integration": "npm test -- --watch -c jest-integration.config.js",
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --coverage",
+    "test:coveralls": "npm run test:ci && coveralls < coverage/lcov.info",
     "prepare": "husky"
   },
   "keywords": [],
@@ -28,6 +29,7 @@
     "@types/nodemailer": "^6.4.15",
     "@types/supertest": "^6.0.2",
     "@types/validator": "^13.11.10",
+    "coveralls-next": "^4.2.1",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-jest": "^28.5.0",
@@ -51,6 +53,9 @@
     "module-alias": "^2.2.3",
     "mongodb": "^6.6.1",
     "nodemailer": "^6.9.13"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "_moduleAliases": {
     "@": "dist"
