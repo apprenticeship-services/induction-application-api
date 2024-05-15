@@ -6,6 +6,7 @@ export class NodemailerHelper {
   static initMail () {
     this.transporter = nodemailer.createTransport({
       service: env.emailService,
+      secure: false,
       auth: {
         user: env.emailServiceUser,
         pass: env.emailServiceSecret
