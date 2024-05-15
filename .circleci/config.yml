@@ -1,0 +1,40 @@
+version: 2.1
+orbs:
+  coveralls: coveralls/coveralls@2.2.1
+  node: circleci/node@5.2.0
+jobs:
+  build:
+    # Install node dependencies and run tests
+    executor: node/default
+    steps:
+      - checkout
+      - run: npm ci
+      - run:
+          name: EsLint style
+          command: "npx eslint 'src/**'"
+
+      - run:
+          name: Run Tests and Check Code Coverage
+          command: npm run test:ci
+
+      - coveralls/upload:
+          parallel: true
+          flag_name: Coverage Test
+          verbose: true
+    
+  done:
+    executor: node/default
+
+    steps:
+    - coveralls/upload:
+        parallel_finished: true
+        carryforward: "Coverage Test"
+      
+      
+workflows:
+  test_parallel_then_upload:
+    jobs:
+      - build
+      - done:  
+          requires: [build]
+      

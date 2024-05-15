@@ -2,6 +2,7 @@ import request from 'supertest'
 import app from '../config/app'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
+import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
 
 let accountsCollection: Collection
 
@@ -14,6 +15,7 @@ describe('Register Admin Route', () => {
   })
   describe('Register admin route', () => {
     describe('POST /register/admin', () => {
+      jest.spyOn(EmailServiceAdapter.prototype, 'sendRegistrationMail').mockReturnValueOnce(Promise.resolve(null))
       test('Should register an admin account and return no content', async () => {
         await request(app)
           .post('/api/register/admin')

@@ -24,7 +24,8 @@ const config = {
   preset: '@shelf/jest-mongodb',
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1'
-  }
+  },
+  testTimeout: 10000
 }
 
 module.exports = config

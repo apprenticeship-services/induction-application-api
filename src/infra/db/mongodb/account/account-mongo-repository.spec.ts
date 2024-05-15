@@ -52,7 +52,6 @@ describe('Account Mongo Repository', () => {
       const sut = new AccountMongoRepository()
       await accountsCollection.insertOne(fakeAccountData())
       const account = await sut.loadByEmail(fakeAccountData().email)
-      console.log(account)
       expect(account).toBeTruthy()
     })
   })
