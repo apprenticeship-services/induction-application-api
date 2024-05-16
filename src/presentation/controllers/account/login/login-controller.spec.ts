@@ -51,4 +51,11 @@ describe('Login Controller', () => {
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(badRequest(new MissingParamError('email')))
   })
+
+  test('Should return 400 if name is not provided', async () => {
+    const { sut, validatorStub } = makeSut()
+    jest.spyOn(validatorStub, 'validate').mockReturnValueOnce(new MissingParamError('password'))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(badRequest(new MissingParamError('password')))
+  })
 })
