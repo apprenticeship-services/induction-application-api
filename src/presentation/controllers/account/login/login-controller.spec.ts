@@ -1,9 +1,9 @@
 import { Validator } from '@/presentation/protocols/validator'
 import { LoginController } from './login-controller'
-import { HttpRequest } from '@/presentation/protocols'
+import { HeaderType, HttpRequest } from '@/presentation/protocols'
 import { ValidatorComposite } from '@/validator/validators/validation-composite'
 import { MissingParamError } from '@/presentation/errors/missing-param'
-import { badRequest, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, serverError, success, unauthorized } from '@/presentation/helpers/http-helper'
 import { Authentication, AuthenticationParams } from '@/domain/use-cases/authentication'
 import { UserCredentials } from '@/domain/models/user-credentials'
 
@@ -61,6 +61,16 @@ const fakeUserCredentials = (): UserCredentials => ({
   accessToken: 'any_token'
 })
 
+const fakeTokenHeader = (): HeaderType => ({
+  token: {
+    value: 'any_token',
+    options: {
+      httpOnly: true,
+      secure: true
+    }
+  }
+})
+
 describe('Login Controller', () => {
   test('Should call Validator with correct values', async () => {
     const { sut, validatorStub } = makeSut()
@@ -95,5 +105,20 @@ describe('Login Controller', () => {
     jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(serverError(new Error()))
+  })
+
+  test('Should return 401 unauthorized error if Authentication returns null', async () => {
+    const { sut, authenticationStub } = makeSut()
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(unauthorized())
+  })
+
+  test('Should return 200 and return token on header on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest())
+    const userCredentials = fakeUserCredentials()
+    delete userCredentials.accessToken
+    expect(response).toEqual(success(userCredentials, fakeTokenHeader()))
   })
 })
