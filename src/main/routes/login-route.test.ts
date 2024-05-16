@@ -1,9 +1,10 @@
+import { Collection } from 'mongodb'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import request from 'supertest'
 import app from '../config/app'
-import { Collection } from 'mongodb'
-import env from '../config/env'
 import { hash } from 'bcrypt'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import env from '../config/env'
 
 let accountsCollection: Collection
 describe('Login Route', () => {
@@ -58,9 +59,9 @@ describe('Login Route', () => {
         .expect(401)
     })
 
-    test('Should return 200 if password matches registered account', async () => {
+    test('Should return 200 if password matches registered account and have token on headers', async () => {
       const password = await hash('test_password', env.salt)
-      await accountsCollection.insertOne({
+      const account = await accountsCollection.insertOne({
         name: 'test_name',
         email: 'test_email@hotmail.com',
         role: 'test_role',
@@ -68,13 +69,28 @@ describe('Login Route', () => {
         password
       })
 
-      await request(app)
+      const response = await request(app)
         .post('/api/login')
         .send({
           email: 'test_email@hotmail.com',
           password: 'test_password'
         })
         .expect(200)
+      expect(response.headers['set-cookie']).toBeDefined()
+      expect(response.headers['set-cookie'][0]).toMatch(/token=/)
+      expect(response.headers['set-cookie'][0]).toMatch(/HttpOnly/)
+      expect(response.headers['set-cookie'][0]).toMatch(/Secure/)
+
+      const tokenMatch = response.headers['set-cookie'][0].match(/token=([^;]+)/)
+      expect(tokenMatch).toBeDefined()
+      const token = tokenMatch[1]
+      expect(token).toBeTruthy()
+
+      const secretKey = env.jwtSecretToken
+      const decodedToken = jwt.verify(token, secretKey) as JwtPayload
+      expect(decodedToken).toBeDefined()
+      expect(decodedToken._id).toBe(account.insertedId.toString())
+      expect(decodedToken.role).toBe('test_role')
     })
   })
 })
