@@ -1,5 +1,5 @@
 import { Authentication } from '@/domain/use-cases/authentication'
-import { badRequest, serverError, unauthorized } from '@/presentation/helpers/http-helper'
+import { badRequest, serverError, success, unauthorized } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
 
@@ -19,9 +19,22 @@ export class LoginController implements Controller {
       const { email, password } = request.body
       const userCredentials = await this.authentication.auth({ email, password })
 
-      if (!userCredentials) {
+      if (!userCredentials?.accessToken) {
         return unauthorized()
       }
+      const { accessToken, ...details } = userCredentials
+      const tokenHeader = {
+        token: {
+          value: accessToken,
+          options: {
+            httpOnly: true,
+            secure: true
+          }
+        }
+      }
+      return success({
+        ...details
+      }, tokenHeader)
     } catch (e) {
       return serverError(e)
     }

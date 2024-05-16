@@ -1,6 +1,6 @@
 import { ServerError } from '../errors/server-error'
 import { UnauthorizedError } from '../errors/unauthorized'
-import { HttpResponse } from '../protocols'
+import { HeaderType, HttpResponse } from '../protocols'
 
 export const badRequest = (e: Error): HttpResponse => ({
   statusCode: 400,
@@ -20,6 +20,12 @@ export const forbidden = (e: Error): HttpResponse => ({
 export const serverError = (e: Error): HttpResponse => ({
   statusCode: 500,
   body: new ServerError(e.stack)
+})
+
+export const success = (data: any, headers?: HeaderType) => ({
+  statusCode: 200,
+  body: data,
+  headers
 })
 
 export const noContent = ():HttpResponse => ({
