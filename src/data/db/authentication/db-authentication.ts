@@ -12,10 +12,12 @@ export class DbAuthentication implements Authentication {
   async auth (userCredentials: AuthenticationParams): Promise<UserCredentials> {
     const { email } = userCredentials
     const isAccount = this.loadAccountByEmailRepository.loadByEmail(email)
+    if (!isAccount) {
+      return null
+    }
 
     // check if password matches with ghashed password, else null
     // create jwt token
     // return user, with token
-    return null
   }
 }
