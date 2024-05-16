@@ -28,5 +28,12 @@ describe('JwtAdapter', () => {
       const tokenResponse = sut.encrypt(fakeEncryptDetails())
       expect(tokenResponse).rejects.toThrow()
     })
+
+    test('Should return token on success', async () => {
+      const sut = new JwtAdapter('secret')
+      const tokenResponse = await sut.encrypt(fakeEncryptDetails())
+      expect(tokenResponse).toBeTruthy()
+      expect(tokenResponse).toBe('json_token')
+    })
   })
 })
