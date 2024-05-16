@@ -5,6 +5,7 @@ import app from '../config/app'
 import { hash } from 'bcrypt'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import env from '../config/env'
+import { UserJwtPayload } from '@/presentation/protocols/token-payload'
 
 let accountsCollection: Collection
 describe('Login Route', () => {
@@ -87,7 +88,7 @@ describe('Login Route', () => {
       expect(token).toBeTruthy()
 
       const secretKey = env.jwtSecretToken
-      const decodedToken = jwt.verify(token, secretKey) as JwtPayload
+      const decodedToken = jwt.verify(token, secretKey) as UserJwtPayload
       expect(decodedToken).toBeDefined()
       expect(decodedToken._id).toBe(account.insertedId.toString())
       expect(decodedToken.role).toBe('test_role')
