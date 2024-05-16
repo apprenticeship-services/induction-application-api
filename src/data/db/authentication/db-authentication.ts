@@ -21,7 +21,10 @@ export class DbAuthentication implements Authentication {
 
     const isPasswordValid = await this.hashComparer.compare(password, isAccount.password)
 
-    // check if password matches with ghashed password, else null
+    if (!isPasswordValid) {
+      return null
+    }
+
     // create jwt token
     // return user, with token
   }
