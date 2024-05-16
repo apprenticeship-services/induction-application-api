@@ -109,6 +109,13 @@ describe('Db Authentication Use-case', () => {
     expect(authResponse).toBeNull()
   })
 
+  test('Should throw if HashComparer fails', async () => {
+    const { sut, hashComparerStub } = makeSut()
+    jest.spyOn(hashComparerStub, 'compare').mockReturnValueOnce(Promise.reject(new Error()))
+    const authResponse = sut.auth(fakeCredentials())
+    expect(authResponse).rejects.toThrow()
+  })
+
   test('Should call Encrypter with correct values', async () => {
     const { sut, encrypterStub } = makeSut()
     const encrypterSpy = jest.spyOn(encrypterStub, 'encrypt')
