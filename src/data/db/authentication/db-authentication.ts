@@ -14,23 +14,29 @@ export class DbAuthentication implements Authentication {
     this.hashComparer = hashComparer
   }
 
-  async auth (userCredentials: AuthenticationParams): Promise<UserCredentials> {
-    const { email, password } = userCredentials
-    const isAccount = await this.loadAccountByEmailRepository.loadByEmail(email)
-    if (!isAccount) {
+  async auth (authCredentials: AuthenticationParams): Promise<UserCredentials> {
+    const { email, password } = authCredentials
+    const account = await this.loadAccountByEmailRepository.loadByEmail(email)
+    if (!account) {
       return null
     }
 
-    const isPasswordValid = await this.hashComparer.compare(password, isAccount.password)
+    const isPasswordValid = await this.hashComparer.compare(password, account.password)
     if (!isPasswordValid) {
       return null
     }
 
     const accessToken = await this.encrypter.encrypt({
-      _id: isAccount._id,
-      role: isAccount.role
+      _id: account._id,
+      role: account.role
     })
-    // create jwt token
-    // return user, with token
+
+    const userCredentials:UserCredentials = {
+      name: account.name,
+      email: account.email,
+      role: account.role,
+      accessToken
+    }
+    return userCredentials
   }
 }
