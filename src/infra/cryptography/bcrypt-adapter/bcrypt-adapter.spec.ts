@@ -58,5 +58,11 @@ describe('BcryptAdapter', () => {
       const isValid = await sut.compare(fakeCompareValues().password, fakeCompareValues().hashedPassword)
       expect(isValid).toBe(false)
     })
+
+    test('Should return true on success', async () => {
+      const sut = new BcryptAdapter()
+      const isValid = await sut.compare(fakeCompareValues().password, fakeCompareValues().hashedPassword)
+      expect(isValid).toBe(true)
+    })
   })
 })
