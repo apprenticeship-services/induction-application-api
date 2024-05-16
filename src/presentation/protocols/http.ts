@@ -4,8 +4,9 @@ export type HttpRequest = {
 
 export type HeaderType = {
     [key: string]: {
-      value: string,
-      options: object
+        type: string,
+        value: string,
+        options: object
     }
 }
 

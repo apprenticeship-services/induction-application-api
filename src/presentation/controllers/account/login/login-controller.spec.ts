@@ -63,6 +63,7 @@ const fakeUserCredentials = (): UserCredentials => ({
 
 const fakeTokenHeader = (): HeaderType => ({
   token: {
+    type: 'cookie',
     value: 'any_token',
     options: {
       httpOnly: true,

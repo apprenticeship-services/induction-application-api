@@ -25,6 +25,7 @@ export class LoginController implements Controller {
       const { accessToken, ...details } = userCredentials
       const tokenHeader = {
         token: {
+          type: 'cookie',
           value: accessToken,
           options: {
             httpOnly: true,
