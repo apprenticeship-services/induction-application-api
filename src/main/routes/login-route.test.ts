@@ -3,6 +3,7 @@ import request from 'supertest'
 import app from '../config/app'
 import { Collection, ObjectId } from 'mongodb'
 import { AccountModel } from '@/domain/models/account'
+import { hash } from 'bcrypt'
 
 let accountsCollection: Collection
 describe('Login Route', () => {
@@ -34,6 +35,25 @@ describe('Login Route', () => {
         .send({
           email: 'email_not_registered@hotmail.com',
           password: 'any_password'
+        })
+        .expect(401)
+    })
+
+    test('Should return 401 if password does not match registered account', async () => {
+      const password = await hash('test_password', 12)
+      await accountsCollection.insertOne({
+        name: 'test_name',
+        email: 'test_email@hotmail.com',
+        role: 'test_role',
+        createdAt: new Date(),
+        password
+      })
+
+      await request(app)
+        .post('/api/login')
+        .send({
+          email: 'test_email@hotmail.com',
+          password: 'invalid_password'
         })
         .expect(401)
     })
