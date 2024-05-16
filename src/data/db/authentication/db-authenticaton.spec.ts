@@ -2,18 +2,22 @@ import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-b
 import { DbAuthentication } from './db-authentication'
 import { AccountModel } from '@/domain/models/account'
 import { AuthenticationParams } from '@/domain/use-cases/authentication'
+import { HashComparer } from '@/data/protocols/cryptography/hash-comparer'
 
 type Sut = {
     sut: DbAuthentication,
-    loadAccountByEmailRepoStub: LoadAccountByEmailRepository
+  loadAccountByEmailRepoStub: LoadAccountByEmailRepository,
+    hashComparerStub: HashComparer
 }
 
 const makeSut = (): Sut => {
+  const hashComparerStub = makeHashComparerStub()
   const loadAccountByEmailRepoStub = makeLoadAccountByEmailRepo()
-  const sut = new DbAuthentication(loadAccountByEmailRepoStub)
+  const sut = new DbAuthentication(loadAccountByEmailRepoStub, hashComparerStub)
   return {
     sut,
-    loadAccountByEmailRepoStub
+    loadAccountByEmailRepoStub,
+    hashComparerStub
   }
 }
 
@@ -24,6 +28,15 @@ const makeLoadAccountByEmailRepo = (): LoadAccountByEmailRepository => {
     }
   }
   return new LoadAccountByEmailRepositoryStub()
+}
+
+const makeHashComparerStub = (): HashComparer => {
+  class HashComparerStub implements HashComparer {
+    async compare (hash: string): Promise<boolean> {
+      return Promise.resolve(true)
+    }
+  }
+  return new HashComparerStub()
 }
 
 const fakeAccountModel = (): AccountModel => ({
@@ -52,5 +65,12 @@ describe('Db Authentication Use-case', () => {
     jest.spyOn(loadAccountByEmailRepoStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(null))
     const authResponse = await sut.auth(fakeCredentials())
     expect(authResponse).toBeNull()
+  })
+
+  test('Should call HashComparer with correct password and password to compare', async () => {
+    const { sut, hashComparerStub } = makeSut()
+    const hashComparerSpy = jest.spyOn(hashComparerStub, 'compare')
+    await sut.auth(fakeCredentials())
+    expect(hashComparerSpy).toHaveBeenCalledWith(fakeCredentials().password, fakeAccountModel().password)
   })
 })
