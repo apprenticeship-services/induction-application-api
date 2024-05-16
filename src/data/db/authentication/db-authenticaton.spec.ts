@@ -123,6 +123,13 @@ describe('Db Authentication Use-case', () => {
     expect(encrypterSpy).toHaveBeenCalledWith(fakeEncryptDetails())
   })
 
+  test('Should throw if Encrypter fails', async () => {
+    const { sut, encrypterStub } = makeSut()
+    jest.spyOn(encrypterStub, 'encrypt').mockReturnValueOnce(Promise.reject(new Error()))
+    const authResponse = sut.auth(fakeCredentials())
+    expect(authResponse).rejects.toThrow()
+  })
+
   test('Should return user credentials on success', async () => {
     const { sut } = makeSut()
     const authResponse = await sut.auth(fakeCredentials())
