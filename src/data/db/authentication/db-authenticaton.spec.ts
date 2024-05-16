@@ -88,6 +88,13 @@ describe('Db Authentication Use-case', () => {
     expect(authResponse).toBeNull()
   })
 
+  test('Should throw if LoadAccountByEmailRepository fails', async () => {
+    const { sut, loadAccountByEmailRepoStub } = makeSut()
+    jest.spyOn(loadAccountByEmailRepoStub, 'loadByEmail').mockReturnValueOnce(Promise.reject(new Error()))
+    const authResponse = sut.auth(fakeCredentials())
+    expect(authResponse).rejects.toThrow()
+  })
+
   test('Should call HashComparer with correct password and password to compare', async () => {
     const { sut, hashComparerStub } = makeSut()
     const hashComparerSpy = jest.spyOn(hashComparerStub, 'compare')
