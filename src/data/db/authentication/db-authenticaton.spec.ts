@@ -108,4 +108,15 @@ describe('Db Authentication Use-case', () => {
     await sut.auth(fakeCredentials())
     expect(encrypterSpy).toHaveBeenCalledWith(fakeEncryptDetails())
   })
+
+  test('Should return user credentials on success', async () => {
+    const { sut } = makeSut()
+    const authResponse = await sut.auth(fakeCredentials())
+    expect(authResponse).toEqual({
+      name: fakeAccountModel().name,
+      email: fakeAccountModel().email,
+      role: fakeAccountModel().role,
+      accessToken: fakeToken()
+    })
+  })
 })
