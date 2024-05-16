@@ -3,7 +3,7 @@ import { LoginController } from './login-controller'
 import { HttpRequest } from '@/presentation/protocols'
 import { ValidatorComposite } from '@/validator/validators/validation-composite'
 import { MissingParamError } from '@/presentation/errors/missing-param'
-import { badRequest } from '@/presentation/helpers/http-helper'
+import { badRequest, serverError } from '@/presentation/helpers/http-helper'
 import { Authentication, AuthenticationParams } from '@/domain/use-cases/authentication'
 import { UserCredentials } from '@/domain/models/user-credentials'
 
@@ -88,5 +88,12 @@ describe('Login Controller', () => {
     const authSpy = jest.spyOn(authenticationStub, 'auth')
     await sut.handle(fakeRequest())
     expect(authSpy).toHaveBeenCalledWith(fakeAuthCredentials())
+  })
+
+  test('Should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(Promise.reject(new Error()))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(serverError(new Error()))
   })
 })
