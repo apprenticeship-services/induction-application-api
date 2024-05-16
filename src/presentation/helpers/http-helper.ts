@@ -8,7 +8,7 @@ export const badRequest = (e: Error): HttpResponse => ({
 })
 
 export const unauthorized = (): HttpResponse => ({
-  statusCode: 400,
+  statusCode: 401,
   body: new UnauthorizedError()
 })
 
