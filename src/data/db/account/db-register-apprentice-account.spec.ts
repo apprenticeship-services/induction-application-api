@@ -155,6 +155,13 @@ describe('DbRegisterApprenticeAccount', () => {
     expect(loadByEmailSpy).toHaveBeenCalledWith(fakeApprenticeAccountInformation().email)
   })
 
+  test('Should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
+  })
+
   test('Should return null if LoadAccountByEmailRepository finds account', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(fakeAccountModel()))
@@ -176,6 +183,13 @@ describe('DbRegisterApprenticeAccount', () => {
     expect(hasherSpy).toHaveBeenCalledWith('any_password')
   })
 
+  test('Should throw if Hasher throws', async () => {
+    const { sut, hasherStub } = makeSut()
+    jest.spyOn(hasherStub, 'hash').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
+  })
+
   test('Should call RegisterAccountRepository with correct values', async () => {
     const { sut, registerAccountRepositoryStub } = makeSut()
     const registerSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
@@ -183,11 +197,25 @@ describe('DbRegisterApprenticeAccount', () => {
     expect(registerSpy).toHaveBeenCalledWith(fakeAccountRegistration())
   })
 
+  test('Should throw if RegisterAccountRepository throws', async () => {
+    const { sut, registerAccountRepositoryStub } = makeSut()
+    jest.spyOn(registerAccountRepositoryStub, 'register').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
+  })
+
   test('Should call RegisterApprenticeInformationRepository with correct values', async () => {
     const { sut, registerApprenticeInformationRepositoryStub } = makeSut()
     const registerSpy = jest.spyOn(registerApprenticeInformationRepositoryStub, 'register')
     await sut.register(fakeApprenticeAccountInformation())
     expect(registerSpy).toHaveBeenCalledWith(fakeApprenticeInformation())
+  })
+
+  test('Should throw if RegisterApprenticeInformationRepository throws', async () => {
+    const { sut, registerApprenticeInformationRepositoryStub } = makeSut()
+    jest.spyOn(registerApprenticeInformationRepositoryStub, 'register').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
   })
 
   test('Should call RegistrationEmailService with correct values', async () => {
@@ -202,10 +230,11 @@ describe('DbRegisterApprenticeAccount', () => {
     })
   })
 
-  test('Should return account on success', async () => {
-    const { sut } = makeSut()
-    const account = await sut.register(fakeApprenticeAccountInformation())
-    expect(account).toEqual(fakeAccountModel())
+  test('Should throw if RegistrationEmailService throws', async () => {
+    const { sut, registrationEmailServiceStub } = makeSut()
+    jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
   })
 
   test('Should call TransactionManager with correct transaction', async () => {
@@ -235,5 +264,21 @@ describe('DbRegisterApprenticeAccount', () => {
       password: 'any_password',
       role: 'apprentice'
     })
+  })
+
+  test('Should throw if TransactionManager throws', async () => {
+    const {
+      sut,
+      transactionManagerStub
+    } = makeSut()
+    jest.spyOn(transactionManagerStub, 'executeTransaction').mockRejectedValueOnce(new Error())
+    const account = sut.register(fakeApprenticeAccountInformation())
+    expect(account).rejects.toThrow()
+  })
+
+  test('Should return account on success', async () => {
+    const { sut } = makeSut()
+    const account = await sut.register(fakeApprenticeAccountInformation())
+    expect(account).toEqual(fakeAccountModel())
   })
 })
