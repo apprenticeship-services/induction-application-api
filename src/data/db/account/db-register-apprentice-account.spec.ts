@@ -138,4 +138,11 @@ describe('DbRegisterApprenticeAccount', () => {
     await sut.register(fakeApprenticeInformation())
     expect(passwordSpy).toHaveBeenCalled()
   })
+
+  test('Should call Hasher with correct password generated', async () => {
+    const { sut, hasherStub } = makeSut()
+    const hasherSpy = jest.spyOn(hasherStub, 'hash')
+    await sut.register(fakeApprenticeInformation())
+    expect(hasherSpy).toHaveBeenCalledWith('any_password')
+  })
 })
