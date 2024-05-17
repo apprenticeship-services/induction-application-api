@@ -143,7 +143,8 @@ describe('DbRegisterApprenticeAccount', () => {
   })
 
   test('Should return null if LoadAccountByEmailRepository finds account', async () => {
-    const { sut } = makeSut()
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(Promise.resolve(fakeAccountModel()))
     const account = await sut.register(fakeApprenticeAccountInformation())
     expect(account).toBeNull()
   })
@@ -186,5 +187,11 @@ describe('DbRegisterApprenticeAccount', () => {
       password: 'any_password',
       role: 'apprentice'
     })
+  })
+
+  test('Should return account on success', async () => {
+    const { sut } = makeSut()
+    const account = await sut.register(fakeApprenticeAccountInformation())
+    expect(account).toEqual(fakeAccountModel())
   })
 })
