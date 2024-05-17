@@ -29,6 +29,7 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
     if (isAccount) {
       return null
     }
+    const password = this.passwordGenerator.generate()
     return null
   }
 }
