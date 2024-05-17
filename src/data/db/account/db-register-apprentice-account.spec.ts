@@ -175,4 +175,16 @@ describe('DbRegisterApprenticeAccount', () => {
     await sut.register(fakeApprenticeAccountInformation())
     expect(registerSpy).toHaveBeenCalledWith(fakeApprenticeInformation())
   })
+
+  test('Should call RegistrationEmailService with correct values', async () => {
+    const { sut, registrationEmailServiceStub } = makeSut()
+    const emailServiceSpy = jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail')
+    await sut.register(fakeApprenticeAccountInformation())
+    expect(emailServiceSpy).toHaveBeenCalledWith({
+      name: fakeApprenticeAccountInformation().name,
+      emailTo: fakeApprenticeAccountInformation().email,
+      password: 'any_password',
+      role: 'apprentice'
+    })
+  })
 })
