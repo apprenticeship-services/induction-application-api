@@ -56,6 +56,6 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
       role: account.role
     })
 
-    return null
+    return account
   }
 }
