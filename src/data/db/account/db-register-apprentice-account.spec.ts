@@ -116,11 +116,19 @@ const fakeAccountRegistration = (): RegisterAccountRepositoryParams => ({
   createdAt: new Date()
 })
 
-const fakeApprenticeInformation = (): RegisterApprenticeAccountParams => ({
+const fakeApprenticeAccountInformation = (): RegisterApprenticeAccountParams => ({
   name: 'any_name',
   email: 'any_email@hotmail.com',
   advisor: 'any_advisor',
   trade: 'any_trade'
+})
+
+const fakeApprenticeInformation = (): ApprenticeInformationParams => ({
+  accountId: 'any_id',
+  advisor: 'any_advisor',
+  trade: 'any_trade',
+  induction: false,
+  assessment: false
 })
 
 describe('DbRegisterApprenticeAccount', () => {
@@ -130,34 +138,41 @@ describe('DbRegisterApprenticeAccount', () => {
   test('Should call LoadAccountByEmailRepository with correct email', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut()
     const loadByEmailSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
-    await sut.register(fakeApprenticeInformation())
-    expect(loadByEmailSpy).toHaveBeenCalledWith(fakeApprenticeInformation().email)
+    await sut.register(fakeApprenticeAccountInformation())
+    expect(loadByEmailSpy).toHaveBeenCalledWith(fakeApprenticeAccountInformation().email)
   })
 
   test('Should return null if LoadAccountByEmailRepository finds account', async () => {
     const { sut } = makeSut()
-    const account = await sut.register(fakeApprenticeInformation())
+    const account = await sut.register(fakeApprenticeAccountInformation())
     expect(account).toBeNull()
   })
 
   test('Should call PasswordGenerator', async () => {
     const { sut, passwordGeneratorStub } = makeSut()
     const passwordSpy = jest.spyOn(passwordGeneratorStub, 'generate')
-    await sut.register(fakeApprenticeInformation())
+    await sut.register(fakeApprenticeAccountInformation())
     expect(passwordSpy).toHaveBeenCalled()
   })
 
   test('Should call Hasher with correct password generated', async () => {
     const { sut, hasherStub } = makeSut()
     const hasherSpy = jest.spyOn(hasherStub, 'hash')
-    await sut.register(fakeApprenticeInformation())
+    await sut.register(fakeApprenticeAccountInformation())
     expect(hasherSpy).toHaveBeenCalledWith('any_password')
   })
 
   test('Should call RegisterAccountRepository with correct values', async () => {
     const { sut, registerAccountRepositoryStub } = makeSut()
     const registerSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
-    await sut.register(fakeApprenticeInformation())
+    await sut.register(fakeApprenticeAccountInformation())
     expect(registerSpy).toHaveBeenCalledWith(fakeAccountRegistration())
+  })
+
+  test('Should call RegisterApprenticeInformationRepository with correct values', async () => {
+    const { sut, registerApprenticeInformationRepositoryStub } = makeSut()
+    const registerSpy = jest.spyOn(registerApprenticeInformationRepositoryStub, 'register')
+    await sut.register(fakeApprenticeAccountInformation())
+    expect(registerSpy).toHaveBeenCalledWith(fakeApprenticeInformation())
   })
 })

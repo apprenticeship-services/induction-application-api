@@ -42,6 +42,13 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
       createdAt: new Date()
     })
 
+    await this.registerApprenticeInformationRepository.register({
+      accountId: account._id,
+      ...apprenticeDetails,
+      induction: false,
+      assessment: false
+    })
+
     return null
   }
 }
