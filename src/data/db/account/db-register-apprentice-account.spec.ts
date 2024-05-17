@@ -1,5 +1,4 @@
 import { RegisterAccountRepository, RegisterAccountRepositoryParams } from '@/data/protocols/db/register-account-repository'
-import { DbRegisterAdminAccount } from './db-register-admin-account'
 import { AccountModel } from '@/domain/models/account'
 import { Generator } from '@/data/protocols/generator/generator'
 import { Hasher } from '@/data/protocols/cryptography/hasher'
@@ -9,12 +8,14 @@ import { RegistrationEmailService, RegistrationEmailServiceParams } from '@/data
 import { DbRegisterApprenticeAccount } from './db-register-apprentice-account'
 import { ApprenticeInformationParams, RegisterApprenticeInformationRepository } from '@/data/protocols/db/register-apprentice-induction-information'
 import { RegisterApprenticeAccountParams } from '@/domain/use-cases/register-apprentice-account'
+import { TransactionManager } from '@/data/protocols/transaction/transaction-manager'
 
 type Sut = {
     sut: DbRegisterApprenticeAccount,
     loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository,
     passwordGeneratorStub: Generator,
     hasherStub: Hasher,
+    transactionManagerStub: TransactionManager,
     registerAccountRepositoryStub: RegisterAccountRepository,
     registerApprenticeInformationRepositoryStub: RegisterApprenticeInformationRepository
     registrationEmailServiceStub: RegistrationEmailService
@@ -24,6 +25,7 @@ const makeSut = (): Sut => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepositoryStub()
   const passwordGeneratorStub = makePasswordGeneratorStub()
   const hasherStub = makeHasherStub()
+  const transactionManagerStub = makeTransactionManagerStub()
   const registerAccountRepositoryStub = makeRegisterAccountRepositoryStub()
   const registerApprenticeInformationRepositoryStub = makeRegisterApprenticeInformationRepositoryStub()
   const registrationEmailServiceStub = makeRegistrationEmailServiceStub()
@@ -31,6 +33,7 @@ const makeSut = (): Sut => {
     loadAccountByEmailRepositoryStub,
     passwordGeneratorStub,
     hasherStub,
+    transactionManagerStub,
     registerAccountRepositoryStub,
     registerApprenticeInformationRepositoryStub,
     registrationEmailServiceStub)
@@ -39,6 +42,7 @@ const makeSut = (): Sut => {
     registerAccountRepositoryStub,
     passwordGeneratorStub,
     hasherStub,
+    transactionManagerStub,
     loadAccountByEmailRepositoryStub,
     registerApprenticeInformationRepositoryStub,
     registrationEmailServiceStub
@@ -70,6 +74,15 @@ const makeHasherStub = (): Hasher => {
     }
   }
   return new HasherStub()
+}
+
+const makeTransactionManagerStub = (): TransactionManager => {
+  class TransactionManagerStub implements TransactionManager {
+    async executeTransaction<T> (transaction: () => Promise<T>): Promise<T> {
+      return transaction()
+    }
+  }
+  return new TransactionManagerStub()
 }
 
 const makeLoadAccountByEmailRepositoryStub = (): LoadAccountByEmailRepository => {
@@ -193,5 +206,34 @@ describe('DbRegisterApprenticeAccount', () => {
     const { sut } = makeSut()
     const account = await sut.register(fakeApprenticeAccountInformation())
     expect(account).toEqual(fakeAccountModel())
+  })
+
+  test('Should call TransactionManager with correct transaction', async () => {
+    const {
+      sut,
+      transactionManagerStub,
+      registerAccountRepositoryStub,
+      registerApprenticeInformationRepositoryStub,
+      registrationEmailServiceStub
+    } = makeSut()
+    const executeTransactionSpy = jest.spyOn(transactionManagerStub, 'executeTransaction')
+    await sut.register(fakeApprenticeAccountInformation())
+
+    expect(executeTransactionSpy).toHaveBeenCalled()
+
+    const registerAccountSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
+    const registerApprenticeSpy = jest.spyOn(registerApprenticeInformationRepositoryStub, 'register')
+    const sendEmailSpy = jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail')
+
+    await executeTransactionSpy.mock.calls[0][0]()
+
+    expect(registerAccountSpy).toHaveBeenCalledWith(fakeAccountRegistration())
+    expect(registerApprenticeSpy).toHaveBeenCalledWith(fakeApprenticeInformation())
+    expect(sendEmailSpy).toHaveBeenCalledWith({
+      name: fakeApprenticeAccountInformation().name,
+      emailTo: fakeApprenticeAccountInformation().email,
+      password: 'any_password',
+      role: 'apprentice'
+    })
   })
 })
