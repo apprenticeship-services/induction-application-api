@@ -108,6 +108,14 @@ const fakeAccountModel = (): AccountModel => ({
   createdAt: new Date()
 })
 
+const fakeAccountRegistration = (): RegisterAccountRepositoryParams => ({
+  name: 'any_name',
+  email: 'any_email@hotmail.com',
+  role: 'apprentice',
+  password: 'hashed_password',
+  createdAt: new Date()
+})
+
 const fakeApprenticeInformation = (): RegisterApprenticeAccountParams => ({
   name: 'any_name',
   email: 'any_email@hotmail.com',
@@ -144,5 +152,12 @@ describe('DbRegisterApprenticeAccount', () => {
     const hasherSpy = jest.spyOn(hasherStub, 'hash')
     await sut.register(fakeApprenticeInformation())
     expect(hasherSpy).toHaveBeenCalledWith('any_password')
+  })
+
+  test('Should call RegisterAccountRepository with correct values', async () => {
+    const { sut, registerAccountRepositoryStub } = makeSut()
+    const registerSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
+    await sut.register(fakeApprenticeInformation())
+    expect(registerSpy).toHaveBeenCalledWith(fakeAccountRegistration())
   })
 })
