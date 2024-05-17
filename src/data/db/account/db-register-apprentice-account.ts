@@ -49,6 +49,13 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
       assessment: false
     })
 
+    await this.registrationEmailService.sendRegistrationMail({
+      name: account.name,
+      emailTo: account.email,
+      password,
+      role: account.role
+    })
+
     return null
   }
 }
