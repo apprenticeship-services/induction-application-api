@@ -131,4 +131,11 @@ describe('DbRegisterApprenticeAccount', () => {
     const account = await sut.register(fakeApprenticeInformation())
     expect(account).toBeNull()
   })
+
+  test('Should call PasswordGenerator', async () => {
+    const { sut, passwordGeneratorStub } = makeSut()
+    const passwordSpy = jest.spyOn(passwordGeneratorStub, 'generate')
+    await sut.register(fakeApprenticeInformation())
+    expect(passwordSpy).toHaveBeenCalled()
+  })
 })
