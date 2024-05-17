@@ -125,4 +125,10 @@ describe('DbRegisterApprenticeAccount', () => {
     await sut.register(fakeApprenticeInformation())
     expect(loadByEmailSpy).toHaveBeenCalledWith(fakeApprenticeInformation().email)
   })
+
+  test('Should return null if LoadAccountByEmailRepository finds account', async () => {
+    const { sut } = makeSut()
+    const account = await sut.register(fakeApprenticeInformation())
+    expect(account).toBeNull()
+  })
 })
