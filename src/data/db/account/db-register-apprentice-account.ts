@@ -6,6 +6,7 @@ import { AccountModel } from '@/domain/models/account'
 import { RegisterApprenticeAccount, RegisterApprenticeAccountParams } from '@/domain/use-cases/register-apprentice-account'
 import { Generator } from '@/data/protocols/generator/generator'
 import { RegisterApprenticeInformationRepository } from '@/data/protocols/db/register-apprentice-induction-information'
+import { TransactionManager } from '@/data/protocols/transaction/transaction-manager'
 
 export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
   private readonly role = 'apprentice'
@@ -13,6 +14,7 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
       private readonly loadAccountByEmailRepository: LoadAccountByEmailRepository,
       private readonly passwordGenerator: Generator,
       private readonly hasher: Hasher,
+      private readonly transactionManager: TransactionManager,
       private readonly registerAccountRepository: RegisterAccountRepository,
       private readonly registerApprenticeInformationRepository: RegisterApprenticeInformationRepository,
       private readonly registrationEmailService: RegistrationEmailService
@@ -32,30 +34,30 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
     const password = this.passwordGenerator.generate()
     const hashedPassword = await this.hasher.hash(password)
 
-    // transaction
-    const { name, email, ...apprenticeDetails } = apprenticeInformation
-    const account = await this.registerAccountRepository.register({
-      name,
-      email,
-      password: hashedPassword,
-      role: this.role,
-      createdAt: new Date()
-    })
+    return await this.transactionManager.executeTransaction(async () => {
+      const { name, email, ...apprenticeDetails } = apprenticeInformation
+      const account = await this.registerAccountRepository.register({
+        name,
+        email,
+        password: hashedPassword,
+        role: this.role,
+        createdAt: new Date()
+      })
 
-    await this.registerApprenticeInformationRepository.register({
-      accountId: account._id,
-      ...apprenticeDetails,
-      induction: false,
-      assessment: false
-    })
+      await this.registerApprenticeInformationRepository.register({
+        accountId: account._id,
+        ...apprenticeDetails,
+        induction: false,
+        assessment: false
+      })
 
-    await this.registrationEmailService.sendRegistrationMail({
-      name: account.name,
-      emailTo: account.email,
-      password,
-      role: account.role
+      await this.registrationEmailService.sendRegistrationMail({
+        name: account.name,
+        emailTo: account.email,
+        password,
+        role: account.role
+      })
+      return account
     })
-
-    return account
   }
 }
