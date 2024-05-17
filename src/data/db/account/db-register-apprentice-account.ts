@@ -31,6 +31,17 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
     }
     const password = this.passwordGenerator.generate()
     const hashedPassword = await this.hasher.hash(password)
+
+    // transaction
+    const { name, email, ...apprenticeDetails } = apprenticeInformation
+    const account = await this.registerAccountRepository.register({
+      name,
+      email,
+      password: hashedPassword,
+      role: this.role,
+      createdAt: new Date()
+    })
+
     return null
   }
 }
