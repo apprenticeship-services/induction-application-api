@@ -30,6 +30,7 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
       return null
     }
     const password = this.passwordGenerator.generate()
+    const hashedPassword = await this.hasher.hash(password)
     return null
   }
 }
