@@ -1,6 +1,6 @@
 import { RegisterApprenticeAccount } from '@/domain/use-cases/register-apprentice-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
-import { badRequest, forbidden } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, noContent, success } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
 
@@ -23,5 +23,7 @@ export class RegisterApprenticeController implements Controller {
     if (!account) {
       return forbidden(new AlreadyExists('email'))
     }
+
+    return noContent()
   }
 }
