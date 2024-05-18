@@ -3,6 +3,9 @@ import { RegisterApprenticeController } from './register-apprentice-controller'
 import { Validator } from '@/presentation/protocols/validator'
 import { AccountModel } from '@/domain/models/account'
 import { HttpRequest } from '@/presentation/protocols'
+import { MissingParamError } from '@/presentation/errors/missing-param'
+import { InvalidParamError } from '@/presentation/errors/invalid-params'
+import { badRequest } from '@/presentation/helpers/http-helper'
 
 type Sut = {
     sut: RegisterApprenticeController
@@ -66,5 +69,12 @@ describe('Register Apprentice Controller', () => {
     const validatorSpy = jest.spyOn(validatorStub, 'validate')
     await sut.handle(fakeRequest())
     expect(validatorSpy).toHaveBeenCalledWith(fakeRequest().body)
+  })
+
+  test('Should return 400 if Validator fails', async () => {
+    const { sut, validatorStub } = makeSut()
+    jest.spyOn(validatorStub, 'validate').mockReturnValueOnce(new MissingParamError('name'))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(badRequest(new MissingParamError('name')))
   })
 })
