@@ -3,7 +3,6 @@ import { EmailValidation } from '@/validator/validators/email-validator'
 import { RequiredFieldValidator } from '@/validator/validators/requires-field-validator'
 import { ValidatorComposite } from '@/validator/validators/validation-composite'
 import { registerApprenticeAccountValidatorFactory } from './register-apprentice-account-validator-factory'
-import { EmailValidatorAdapter } from '@/infra/validator/email-validator-adapter/email-validator-adapter'
 
 jest.mock('@/validator/validators/validation-composite')
 const makeEmailValidatorStub = (): EmailValidator => {
