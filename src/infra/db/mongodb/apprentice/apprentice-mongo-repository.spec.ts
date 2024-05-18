@@ -28,7 +28,8 @@ describe('ApprenticeMongoRepository', () => {
       advisor: 'any_advisor',
       trade: 'any_trade',
       induction: false,
-      assessment: false
+      assessment: false,
+      updatedAt: null
     })
 
     const document = await apprenticesCollection.find<ApprenticeModel>({ accountId: new ObjectId(insertedId.toString()) }).next()

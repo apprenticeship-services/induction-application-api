@@ -48,7 +48,8 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
         accountId: account._id,
         ...apprenticeDetails,
         induction: false,
-        assessment: false
+        assessment: false,
+        updatedAt: null
       }, { session })
 
       await this.registrationEmailService.sendRegistrationMail({

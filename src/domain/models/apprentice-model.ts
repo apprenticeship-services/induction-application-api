@@ -5,5 +5,5 @@ export type ApprenticeModel = {
     advisor: string
     induction: boolean
     assessment: boolean
-    updatedAt: Date
+    updatedAt: Date | null
 }

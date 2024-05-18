@@ -143,7 +143,8 @@ const fakeApprenticeInformation = (): ApprenticeInformationParams => ({
   advisor: 'any_advisor',
   trade: 'any_trade',
   induction: false,
-  assessment: false
+  assessment: false,
+  updatedAt: null
 })
 
 describe('DbRegisterApprenticeAccount', () => {
