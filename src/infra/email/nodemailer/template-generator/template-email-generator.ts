@@ -22,6 +22,21 @@ export class TemplateEmailGenerator implements TemplateEmailRegistrationGenerato
       `
     }
 
+    if (role === 'apprentice') {
+      header = 'Apprentice registration credentials'
+      content = `<h1>Apprentice registration credentials</h1>
+      <p>Dear ${accountData.name},</p> 
+      <p>You have been successfully registered as an apprentice at CETB Bishopstown Campus Apprenticeship Services.</p>
+      <p>Here are your credentials to access our app and complete your online induction:</p>
+      <p> <b>Email: </b>${accountData.emailTo} </p>
+      <p> <b>Password: </b>${accountData.password}</p>
+      </br>
+      <p>Access our app through the link: <a href="https://cetb-apprenticeship-services.vercel.app/">cetb-apprenticeship-services.vercel.app</a></p>
+      </br> 
+      <p>Yours sincerely, <span><strong>Apprenticeship Services Team.</strong></span></p>
+      `
+    }
+
     return {
       header,
       content
