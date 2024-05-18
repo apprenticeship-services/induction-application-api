@@ -77,4 +77,11 @@ describe('Register Apprentice Controller', () => {
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(badRequest(new MissingParamError('name')))
   })
+
+  test('Should call RegisterApprenticeAccount with correct values', async () => {
+    const { sut, registerApprenticeAccountStub } = makeSut()
+    const validatorSpy = jest.spyOn(registerApprenticeAccountStub, 'register')
+    await sut.handle(fakeRequest())
+    expect(validatorSpy).toHaveBeenCalledWith(fakeRequest().body)
+  })
 })
