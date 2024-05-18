@@ -5,6 +5,7 @@ import { Collection } from 'mongodb'
 import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
 import { forbidden } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
+import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
 
 let accountsCollection: Collection
 
@@ -52,6 +53,19 @@ describe('Register Admin Route', () => {
           .post('/api/apprentices')
           .send({ })
           .expect(400)
+      })
+
+      test('Should return 500 transaction fails', async () => {
+        jest.spyOn(MongoDbTransactionManager.prototype, 'executeTransaction').mockRejectedValueOnce(new Error())
+        await request(app)
+          .post('/api/apprentices')
+          .send({
+            name: 'apprentice_name',
+            email: 'apprentice_email@hotmail.com',
+            trade: 'apprentice_trade',
+            advisor: 'apprentice_advisor'
+          })
+          .expect(500)
       })
     })
   })
