@@ -5,7 +5,7 @@ import { AccountModel } from '@/domain/models/account'
 import { HttpRequest } from '@/presentation/protocols'
 import { MissingParamError } from '@/presentation/errors/missing-param'
 import { InvalidParamError } from '@/presentation/errors/invalid-params'
-import { badRequest, forbidden } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, noContent } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 
 type Sut = {
@@ -90,5 +90,11 @@ describe('Register Apprentice Controller', () => {
     jest.spyOn(registerApprenticeAccountStub, 'register').mockReturnValueOnce(Promise.resolve(null))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(forbidden(new AlreadyExists('email')))
+  })
+
+  test('Should return 204 on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(noContent())
   })
 })
