@@ -1,5 +1,6 @@
 import { RegisterApprenticeAccount } from '@/domain/use-cases/register-apprentice-account'
-import { badRequest } from '@/presentation/helpers/http-helper'
+import { AlreadyExists } from '@/presentation/errors/already-exists'
+import { badRequest, forbidden } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
 
@@ -18,5 +19,9 @@ export class RegisterApprenticeController implements Controller {
     }
 
     const account = await this.registerApprenticeAccount.register(request.body)
+
+    if (!account) {
+      return forbidden(new AlreadyExists('email'))
+    }
   }
 }
