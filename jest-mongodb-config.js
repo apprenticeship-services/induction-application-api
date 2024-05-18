@@ -3,13 +3,12 @@ module.exports = {
     binary: {
       skipMD5: true
     },
-    instance: {
-      dbName: 'jest'
-    },
+    instance: {},
     replSet: {
-      count: 3,
+      count: 4,
       storageEngine: 'wiredTiger'
     },
     autoStart: false
-  }
+  },
+  mongoURLEnvName: 'MONGO_URL'
 }

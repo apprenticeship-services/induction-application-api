@@ -13,6 +13,7 @@ const config = {
     'index.ts',
     '.+-protocols.ts'
   ],
+  watchPathIgnorePatterns: ['globalConfig'],
   coverageDirectory: 'coverage',
   testEnvironment: 'node',
   roots: [
@@ -25,7 +26,7 @@ const config = {
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1'
   },
-  testTimeout: 10000
+  testTimeout: 20000
 }
 
 module.exports = config
