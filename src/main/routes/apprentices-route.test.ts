@@ -46,6 +46,13 @@ describe('Register Admin Route', () => {
           })
           .expect(403)
       })
+
+      test('Should return 400 if required field is not provided', async () => {
+        await request(app)
+          .post('/api/apprentices')
+          .send({ })
+          .expect(400)
+      })
     })
   })
 })
