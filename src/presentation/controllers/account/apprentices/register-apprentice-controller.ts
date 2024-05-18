@@ -16,5 +16,7 @@ export class RegisterApprenticeController implements Controller {
     if (error) {
       return badRequest(error)
     }
+
+    const account = await this.registerApprenticeAccount.register(request.body)
   }
 }
