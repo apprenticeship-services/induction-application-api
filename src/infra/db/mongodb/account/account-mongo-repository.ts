@@ -4,9 +4,9 @@ import { MongoHelper } from '../helpers/mongo-helper'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
 
 export class AccountMongoRepository implements RegisterAccountRepository, LoadAccountByEmailRepository {
-  async register (credentials: RegisterAccountRepositoryParams): Promise<AccountModel> {
+  async register (credentials: RegisterAccountRepositoryParams, configOps: object = {}): Promise<AccountModel> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
-    const { insertedId } = await accountsCollection.insertOne(credentials)
+    const { insertedId } = await accountsCollection.insertOne(credentials, configOps)
     const account = { _id: insertedId.toString(), ...credentials }
     return account
   }

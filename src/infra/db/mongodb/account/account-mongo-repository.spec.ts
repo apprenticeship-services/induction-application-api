@@ -22,7 +22,7 @@ describe('Account Mongo Repository', () => {
     MockDate.reset()
     await MongoHelper.disconnect()
   })
-  beforeEach(async () => {
+  afterEach(async () => {
     accountsCollection = await MongoHelper.getCollection('accounts')
     await accountsCollection.deleteMany({})
   })
