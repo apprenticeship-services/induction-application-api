@@ -21,7 +21,7 @@ type Sut = {
     registrationEmailServiceStub: RegistrationEmailService
 }
 
-const mockConfigs = {}
+const session = {}
 
 const makeSut = (): Sut => {
   const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepositoryStub()
@@ -80,8 +80,8 @@ const makeHasherStub = (): Hasher => {
 
 const makeTransactionManagerStub = (): TransactionManager => {
   class TransactionManagerStub implements TransactionManager {
-    async executeTransaction<T> (transaction: (session) => Promise<T>): Promise<T> {
-      return transaction(mockConfigs)
+    async executeTransaction<T> (transaction: (session: any) => Promise<T>): Promise<T> {
+      return transaction(session)
     }
   }
   return new TransactionManagerStub()
@@ -196,7 +196,7 @@ describe('DbRegisterApprenticeAccount', () => {
     const { sut, registerAccountRepositoryStub } = makeSut()
     const registerSpy = jest.spyOn(registerAccountRepositoryStub, 'register')
     await sut.register(fakeApprenticeAccountInformation())
-    expect(registerSpy).toHaveBeenCalledWith(fakeAccountRegistration(), mockConfigs)
+    expect(registerSpy).toHaveBeenCalledWith(fakeAccountRegistration(), { session })
   })
 
   test('Should throw if RegisterAccountRepository throws', async () => {
@@ -210,7 +210,7 @@ describe('DbRegisterApprenticeAccount', () => {
     const { sut, registerApprenticeInformationRepositoryStub } = makeSut()
     const registerSpy = jest.spyOn(registerApprenticeInformationRepositoryStub, 'register')
     await sut.register(fakeApprenticeAccountInformation())
-    expect(registerSpy).toHaveBeenCalledWith(fakeApprenticeInformation(), mockConfigs)
+    expect(registerSpy).toHaveBeenCalledWith(fakeApprenticeInformation(), { session })
   })
 
   test('Should throw if RegisterApprenticeInformationRepository throws', async () => {
@@ -256,10 +256,10 @@ describe('DbRegisterApprenticeAccount', () => {
     const registerApprenticeSpy = jest.spyOn(registerApprenticeInformationRepositoryStub, 'register')
     const sendEmailSpy = jest.spyOn(registrationEmailServiceStub, 'sendRegistrationMail')
 
-    await executeTransactionSpy.mock.calls[0][0](mockConfigs)
+    await executeTransactionSpy.mock.calls[0][0](session)
 
-    expect(registerAccountSpy).toHaveBeenCalledWith(fakeAccountRegistration(), mockConfigs)
-    expect(registerApprenticeSpy).toHaveBeenCalledWith(fakeApprenticeInformation(), mockConfigs)
+    expect(registerAccountSpy).toHaveBeenCalledWith(fakeAccountRegistration(), { session })
+    expect(registerApprenticeSpy).toHaveBeenCalledWith(fakeApprenticeInformation(), { session })
     expect(sendEmailSpy).toHaveBeenCalledWith({
       name: fakeApprenticeAccountInformation().name,
       emailTo: fakeApprenticeAccountInformation().email,

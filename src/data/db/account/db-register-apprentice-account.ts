@@ -42,14 +42,14 @@ export class DbRegisterApprenticeAccount implements RegisterApprenticeAccount {
         password: hashedPassword,
         role: this.role,
         createdAt: new Date()
-      }, session)
+      }, { session })
 
       await this.registerApprenticeInformationRepository.register({
         accountId: account._id,
         ...apprenticeDetails,
         induction: false,
         assessment: false
-      }, session)
+      }, { session })
 
       await this.registrationEmailService.sendRegistrationMail({
         name: account.name,
