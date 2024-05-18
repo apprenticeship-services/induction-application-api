@@ -3,21 +3,18 @@ import { MongoHelper } from '../helpers/mongo-helper'
 import { ClientSession } from 'mongodb'
 
 export class MongoDbTransactionManager implements TransactionManager {
-  private session: ClientSession = null
-  async executeTransaction<T> (transaction: () => Promise<T>): Promise<T> {
-    this.session = await MongoHelper.createTransactionSession()
+  async executeTransaction<T> (transaction: (session?: ClientSession) => Promise<T>): Promise<T> {
+    const session = MongoHelper.client.startSession()
     try {
-      this.session.startTransaction()
-      const result = await transaction()
-      await this.session.commitTransaction()
+      const result = await session.withTransaction(async () => await transaction(session), {
+        readPreference: 'primary',
+        retryWrites: true,
+        readConcern: { level: 'local' },
+        writeConcern: { w: 'majority' }
+      })
       return result
-    } catch (e) {
-      if (this.session) {
-        await this.session.abortTransaction()
-      }
-      throw e
     } finally {
-      this.session.endSession()
+      await session.endSession()
     }
   }
 }

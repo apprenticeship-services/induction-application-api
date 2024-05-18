@@ -1,3 +1,3 @@
 export interface TransactionManager{
-    executeTransaction<T>(transaction: () => Promise<T>):Promise<T>
+    executeTransaction<T>(transaction: (session?: any) => Promise<T>):Promise<T>
 }
