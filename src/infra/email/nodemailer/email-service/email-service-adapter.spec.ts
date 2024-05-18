@@ -56,4 +56,14 @@ describe('EmailServiceAdapter', () => {
     await sut.sendRegistrationMail(fakeRegistrationEmailObject())
     expect(sendMailMock).toHaveBeenCalledWith(fakeMessage(), expect.any(Function))
   })
+
+  test('should throw an error if sendMail fails', async () => {
+    const { sut } = makeSut()
+    sendMailMock.mockImplementationOnce((message: NodemailerMessage, callback: (error: Error | null) => void) => {
+      callback(new Error())
+    })
+    const emailResult = sut.sendRegistrationMail(fakeRegistrationEmailObject())
+
+    expect(emailResult).rejects.toThrow()
+  })
 })
