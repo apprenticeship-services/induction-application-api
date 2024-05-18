@@ -1,6 +1,6 @@
 import { RegisterApprenticeAccount } from '@/domain/use-cases/register-apprentice-account'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
-import { badRequest, forbidden, noContent, success } from '@/presentation/helpers/http-helper'
+import { badRequest, forbidden, noContent, serverError, success } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
 
@@ -13,17 +13,20 @@ export class RegisterApprenticeController implements Controller {
   }
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
-    const error = this.validator.validate(request.body)
-    if (error) {
-      return badRequest(error)
+    try {
+      const error = this.validator.validate(request.body)
+      if (error) {
+        return badRequest(error)
+      }
+
+      const account = await this.registerApprenticeAccount.register(request.body)
+      if (!account) {
+        return forbidden(new AlreadyExists('email'))
+      }
+
+      return noContent()
+    } catch (error) {
+      return serverError(error)
     }
-
-    const account = await this.registerApprenticeAccount.register(request.body)
-
-    if (!account) {
-      return forbidden(new AlreadyExists('email'))
-    }
-
-    return noContent()
   }
 }
