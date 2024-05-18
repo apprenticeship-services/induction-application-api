@@ -66,4 +66,10 @@ describe('EmailServiceAdapter', () => {
 
     expect(emailResult).rejects.toThrow()
   })
+
+  test('Should return null on success', async () => {
+    const { sut } = makeSut()
+    const emailResult = await sut.sendRegistrationMail(fakeRegistrationEmailObject())
+    expect(emailResult).toBeNull()
+  })
 })
