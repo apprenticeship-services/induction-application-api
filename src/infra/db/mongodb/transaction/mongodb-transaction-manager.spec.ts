@@ -59,7 +59,7 @@ describe('MongoDbTransactionManager', () => {
         assessment: false
       }, { session })
 
-      await Promise.reject(new Error())
+      throw new Error()
     }
     const sut = new MongoDbTransactionManager()
     const transactionResult = sut.executeTransaction(mockTransaction)
@@ -68,7 +68,7 @@ describe('MongoDbTransactionManager', () => {
     const apprenticeInformation = await apprenticesCollection.findOne({ email: 'any_email@hotmail.com' })
     expect(account).toBeNull()
     expect(apprenticeInformation).toBeNull()
-    expect(transactionResult).rejects.toThrow()
+    await expect(transactionResult).rejects.toThrow()
   })
 
   test('should abort transaction on fail and not commit ', async () => {
