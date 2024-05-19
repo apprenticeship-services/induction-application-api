@@ -14,16 +14,21 @@ export class DeleteAdminController implements Controller {
   }
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
-    const { id } = request.params
-    const account = await this.loadAccountById.loadById(id)
-    if (!account) {
-      return notFound(new AccountNotFoundError())
-    }
+    try {
+      const { id } = request.params
+      const account = await this.loadAccountById.loadById(id)
+      if (!account) {
+        return notFound(new AccountNotFoundError())
+      }
 
-    const deleteResult = await this.deleteAccountById.deleteById(account._id)
-    if (!deleteResult) {
-      return serverError(new DeleteError('Account deletion failed'))
+      const deleteResult = await this.deleteAccountById.deleteById(account._id)
+      if (!deleteResult) {
+        return serverError(new DeleteError('Account deletion failed'))
+      }
+
+      return noContent()
+    } catch (error) {
+      return serverError(error)
     }
-    return noContent()
   }
 }
