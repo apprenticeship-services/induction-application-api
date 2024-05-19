@@ -61,7 +61,7 @@ const fakeAccountModel = (): AccountModel => ({
   _id: 'any_id',
   name: 'any_name',
   email: 'any_email@hotmail.com',
-  role: 'any_role',
+  role: 'admin',
   password: 'hashed_password',
   createdAt: new Date()
 })
@@ -104,6 +104,13 @@ describe('DeleteAdminController', () => {
   test('Should return 404 if id is not linked to any account', async () => {
     const { sut, loadAccountByIdStub } = makeSut()
     jest.spyOn(loadAccountByIdStub, 'loadById').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(notFound(new AccountNotFoundError()))
+  })
+
+  test('Should return 404 if account is not admin', async () => {
+    const { sut, loadAccountByIdStub } = makeSut()
+    jest.spyOn(loadAccountByIdStub, 'loadById').mockReturnValueOnce(Promise.resolve({ ...fakeAccountModel(), role: 'other_role' }))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(notFound(new AccountNotFoundError()))
   })
