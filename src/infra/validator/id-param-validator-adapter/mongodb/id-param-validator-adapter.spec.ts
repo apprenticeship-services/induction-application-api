@@ -19,4 +19,12 @@ describe('IdParamValidatorAdapter', () => {
     const result = sut.isValid(id)
     expect(result).toBe(true)
   })
+
+  test('Should return false if ObjectId method returns false', () => {
+    const sut = new IdParamValidatorAdapter()
+    jest.spyOn(ObjectId, 'isValid').mockReturnValueOnce(false)
+    const id = fakeId()
+    const result = sut.isValid(id)
+    expect(result).toBe(false)
+  })
 })
