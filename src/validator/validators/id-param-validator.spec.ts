@@ -42,4 +42,12 @@ describe('IdParamValidation', () => {
     const error = sut.validate(fakeParams())
     expect(error).toEqual(new InvalidParamError('id'))
   })
+
+  test('Should throw if IdParamValidator throws', async () => {
+    const { sut, idParamValidator } = makeSut()
+    jest.spyOn(idParamValidator, 'isValid').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    expect(sut.validate).toThrow()
+  })
 })
