@@ -6,7 +6,7 @@ import { DeleteAccountByIdRepository } from '@/data/protocols/db/delete-account-
 import { ObjectId } from 'mongodb'
 import { LoadAccountByIdRepository } from '@/data/protocols/db/load-account-by-id-repository'
 
-export class AccountMongoRepository implements RegisterAccountRepository, LoadAccountByEmailRepository, DeleteAccountByIdRepository {
+export class AccountMongoRepository implements RegisterAccountRepository, LoadAccountByEmailRepository, LoadAccountByIdRepository, DeleteAccountByIdRepository {
   async register (credentials: RegisterAccountRepositoryParams, configOps: object = {}): Promise<AccountModel> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
     const { insertedId } = await accountsCollection.insertOne(credentials, configOps)
@@ -17,6 +17,12 @@ export class AccountMongoRepository implements RegisterAccountRepository, LoadAc
   async loadByEmail (email: string): Promise<AccountModel> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
     const account = await accountsCollection.findOne({ email })
+    return MongoHelper.mapObjectId<AccountModel>(account)
+  }
+
+  async loadById (accountId: string): Promise<AccountModel> {
+    const accountsCollection = await MongoHelper.getCollection('accounts')
+    const account = await accountsCollection.findOne({ _id: new ObjectId(accountId) })
     return MongoHelper.mapObjectId<AccountModel>(account)
   }
 
