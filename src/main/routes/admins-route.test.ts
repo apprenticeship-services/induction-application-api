@@ -71,6 +71,19 @@ describe('Register Admin Route', () => {
           .delete(`/api/admins/${idParam}`)
           .expect(204)
       })
+
+      test('Should return 404 if account is not registered as admin', async () => {
+        const { insertedId } = await accountsCollection.insertOne({
+          name: 'any_name',
+          email: 'any_email@hotmail.com',
+          role: 'other_role'
+        })
+
+        const idParam = insertedId.toString()
+        await request(app)
+          .delete(`/api/admins/${idParam}`)
+          .expect(404)
+      })
     })
   })
 })
