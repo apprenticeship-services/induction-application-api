@@ -91,4 +91,11 @@ describe('DeleteAdminController', () => {
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(noContent())
   })
+
+  test('Should return 500 if LoadAccountById throws', async () => {
+    const { sut, loadAccountByIdStub } = makeSut()
+    jest.spyOn(loadAccountByIdStub, 'loadById').mockReturnValueOnce(Promise.reject(new Error()))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(serverError(new Error()))
+  })
 })
