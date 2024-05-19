@@ -3,6 +3,8 @@ import { DeleteAdminController } from './delete-admin-controller'
 import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 import { AccountModel } from '@/domain/models/account'
 import { HttpRequest } from '@/presentation/protocols'
+import { notFound } from '@/presentation/helpers/http-helper'
+import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 
 type Sut = {
     sut: DeleteAdminController
@@ -60,5 +62,12 @@ describe('DeleteAdminController', () => {
     const loadAccountSpy = jest.spyOn(loadAccountByIdStub, 'loadById')
     await sut.handle(fakeRequest())
     expect(loadAccountSpy).toHaveBeenCalledWith('any_id')
+  })
+
+  test('Should return 404 if id is not linked to any account', async () => {
+    const { sut, loadAccountByIdStub } = makeSut()
+    jest.spyOn(loadAccountByIdStub, 'loadById').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(notFound(new AccountNotFoundError()))
   })
 })
