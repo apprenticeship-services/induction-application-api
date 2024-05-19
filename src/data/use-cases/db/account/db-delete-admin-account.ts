@@ -1,7 +1,7 @@
 import { DeleteAccountByIdRepository } from '@/data/protocols/db/delete-account-by-id-repository'
-import { DeleteAccount } from '@/domain/use-cases/delete-account-by-id'
+import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 
-export class DbDeleteAdminAccountById implements DeleteAccount {
+export class DbDeleteAdminAccountById implements DeleteAccountById {
   constructor (private readonly deleteAccountByIdRepository: DeleteAccountByIdRepository) {
     this.deleteAccountByIdRepository = deleteAccountByIdRepository
   }
