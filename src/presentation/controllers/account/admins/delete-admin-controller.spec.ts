@@ -6,21 +6,25 @@ import { HttpRequest } from '@/presentation/protocols'
 import { noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
 import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 import { DeleteError } from '@/presentation/errors/delete-error'
+import { Validator } from '@/presentation/protocols/validator'
 
 type Sut = {
-    sut: DeleteAdminController
-    loadAccountByIdStub: LoadAccountById
-    deleteAccountByIdStub: DeleteAccountById
+  sut: DeleteAdminController
+  loadAccountByIdStub: LoadAccountById
+  deleteAccountByIdStub: DeleteAccountById,
+  idParamValidator:Validator
 }
 
 const makeSut = (): Sut => {
   const loadAccountByIdStub = makeLoadAccountByIdStub()
   const deleteAccountByIdStub = makeDeleteAccountByIdStub()
-  const sut = new DeleteAdminController(loadAccountByIdStub, deleteAccountByIdStub)
+  const idParamValidator = makeValidatorStub()
+  const sut = new DeleteAdminController(idParamValidator, loadAccountByIdStub, deleteAccountByIdStub)
   return {
     sut,
     loadAccountByIdStub,
-    deleteAccountByIdStub
+    deleteAccountByIdStub,
+    idParamValidator
   }
 }
 
@@ -42,6 +46,15 @@ const makeDeleteAccountByIdStub = (): DeleteAccountById => {
   return new DeleteAccountByIdStub()
 }
 
+const makeValidatorStub = (): Validator => {
+  class ValidatorStub implements Validator {
+    validate (input: object): Error {
+      return null
+    }
+  }
+  return new ValidatorStub()
+}
+
 const fakeAccountModel = (): AccountModel => ({
   _id: 'any_id',
   name: 'any_name',
@@ -58,6 +71,13 @@ const fakeRequest = (): HttpRequest => ({
 })
 
 describe('DeleteAdminController', () => {
+  test('Should call IdParamValidation with correct id param', async () => {
+    const { sut, idParamValidator } = makeSut()
+    const loadAccountSpy = jest.spyOn(idParamValidator, 'validate')
+    await sut.handle(fakeRequest())
+    expect(loadAccountSpy).toHaveBeenCalledWith(fakeRequest().params)
+  })
+
   test('Should call LoadAccountById with correct id', async () => {
     const { sut, loadAccountByIdStub } = makeSut()
     const loadAccountSpy = jest.spyOn(loadAccountByIdStub, 'loadById')
