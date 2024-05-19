@@ -17,13 +17,14 @@ describe('Account Mongo Repository', () => {
   beforeAll(async () => {
     MockDate.set(new Date())
     await MongoHelper.connect(process.env.MONGO_URL)
+    accountsCollection = await MongoHelper.getCollection('accounts')
   })
   afterAll(async () => {
     MockDate.reset()
     await MongoHelper.disconnect()
   })
+
   afterEach(async () => {
-    accountsCollection = await MongoHelper.getCollection('accounts')
     await accountsCollection.deleteMany({})
   })
   describe('Method: register()', () => {
@@ -57,6 +58,13 @@ describe('Account Mongo Repository', () => {
   })
 
   describe('Method: deleteById()', () => {
+    test('Should return false if id does not exists', async () => {
+      const fakeId = new ObjectId()
+      const sut = new AccountMongoRepository()
+      const deleteResult = await sut.deleteById(fakeId.toString())
+      expect(deleteResult).toBe(false)
+    })
+
     test('Should return false if id does not exists', async () => {
       const fakeId = new ObjectId()
       const sut = new AccountMongoRepository()
