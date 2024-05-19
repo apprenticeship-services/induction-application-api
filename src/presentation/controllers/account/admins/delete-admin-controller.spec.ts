@@ -70,4 +70,11 @@ describe('DeleteAdminController', () => {
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(notFound(new AccountNotFoundError()))
   })
+
+  test('Should call DeleteAccountById with correct id', async () => {
+    const { sut, deleteAccountByIdStub } = makeSut()
+    const loadAccountSpy = jest.spyOn(deleteAccountByIdStub, 'deleteById')
+    await sut.handle(fakeRequest())
+    expect(loadAccountSpy).toHaveBeenCalledWith(fakeAccountModel()._id)
+  })
 })
