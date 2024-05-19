@@ -3,7 +3,7 @@ import { DeleteAdminController } from './delete-admin-controller'
 import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 import { AccountModel } from '@/domain/models/account'
 import { HttpRequest } from '@/presentation/protocols'
-import { notFound, serverError } from '@/presentation/helpers/http-helper'
+import { noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
 import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 import { DeleteError } from '@/presentation/errors/delete-error'
 
@@ -84,5 +84,11 @@ describe('DeleteAdminController', () => {
     jest.spyOn(deleteAccountByIdStub, 'deleteById').mockReturnValueOnce(Promise.resolve(false))
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(serverError(new DeleteError('Account deletion failed')))
+  })
+
+  test('Should return 204 on success', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(noContent())
   })
 })
