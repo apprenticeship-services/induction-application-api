@@ -1,5 +1,6 @@
 import { IdParamValidation } from './id-param-validator'
 import { IdParamValidator } from '../protocols/id-param-validator'
+import { InvalidParamError } from '@/presentation/errors/invalid-params'
 
 type SutType = {
     sut: IdParamValidation,
@@ -32,6 +33,13 @@ describe('IdParamValidation', () => {
     const { sut, idParamValidator } = makeSut()
     const isValidSpy = jest.spyOn(idParamValidator, 'isValid')
     sut.validate(fakeParams())
-    expect(isValidSpy).toHaveBeenCalledWith('any_id')
+    expect(isValidSpy).toHaveBeenCalledWith(fakeParams().id)
+  })
+
+  test('Should return error if IdParamValidator returns false', () => {
+    const { sut, idParamValidator } = makeSut()
+    jest.spyOn(idParamValidator, 'isValid').mockReturnValueOnce(false)
+    const error = sut.validate(fakeParams())
+    expect(error).toEqual(new InvalidParamError('id'))
   })
 })
