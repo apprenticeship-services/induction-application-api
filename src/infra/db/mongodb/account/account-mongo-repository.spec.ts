@@ -58,18 +58,18 @@ describe('Account Mongo Repository', () => {
   })
 
   describe('Method: deleteById()', () => {
-    test('Should return false if id does not exists', async () => {
+    test('Should return false if _id does not exists', async () => {
       const fakeId = new ObjectId()
       const sut = new AccountMongoRepository()
       const deleteResult = await sut.deleteById(fakeId.toString())
       expect(deleteResult).toBe(false)
     })
 
-    test('Should return false if id does not exists', async () => {
-      const fakeId = new ObjectId()
+    test('Should return true if _id exists', async () => {
+      const { insertedId } = await accountsCollection.insertOne(fakeAccountData())
       const sut = new AccountMongoRepository()
-      const deleteResult = await sut.deleteById(fakeId.toString())
-      expect(deleteResult).toBe(false)
+      const deleteResult = await sut.deleteById(insertedId.toString())
+      expect(deleteResult).toBe(true)
     })
   })
 })
