@@ -2,7 +2,7 @@ import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 import { LoadAccountById } from '@/domain/use-cases/load-account-by-id'
 import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 import { DeleteError } from '@/presentation/errors/delete-error'
-import { notFound, serverError } from '@/presentation/helpers/http-helper'
+import { noContent, notFound, serverError, success } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class DeleteAdminController implements Controller {
@@ -24,6 +24,6 @@ export class DeleteAdminController implements Controller {
     if (!deleteResult) {
       return serverError(new DeleteError('Account deletion failed'))
     }
-    return null
+    return noContent()
   }
 }
