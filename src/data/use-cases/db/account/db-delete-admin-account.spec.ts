@@ -47,4 +47,10 @@ describe('Delete Admin Account', () => {
     const result = await sut.deleteById(fakeAccountId())
     expect(result).toBe(false)
   })
+
+  test('Should return true on success', async () => {
+    const { sut } = makeSut()
+    const result = await sut.deleteById(fakeAccountId())
+    expect(result).toBe(true)
+  })
 })
