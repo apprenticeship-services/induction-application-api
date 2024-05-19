@@ -87,6 +87,13 @@ describe('DeleteAdminController', () => {
     expect(response).toEqual(badRequest(new InvalidParamError('id')))
   })
 
+  test('Should return 500 if IdParamValidation throws', async () => {
+    const { sut, idParamValidator } = makeSut()
+    jest.spyOn(idParamValidator, 'validate').mockImplementationOnce(() => { throw new Error() })
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(serverError(new Error()))
+  })
+
   test('Should call LoadAccountById with correct id', async () => {
     const { sut, loadAccountByIdStub } = makeSut()
     const loadAccountSpy = jest.spyOn(loadAccountByIdStub, 'loadById')
