@@ -27,4 +27,10 @@ describe('IdParamValidatorAdapter', () => {
     const result = sut.isValid(id)
     expect(result).toBe(false)
   })
+
+  test('Should return false if ObjectId method returns false without mocking id', () => {
+    const sut = new IdParamValidatorAdapter()
+    const result = sut.isValid('any_id')
+    expect(result).toBe(false)
+  })
 })
