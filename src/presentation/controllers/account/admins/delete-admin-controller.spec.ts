@@ -3,10 +3,12 @@ import { DeleteAdminController } from './delete-admin-controller'
 import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 import { AccountModel } from '@/domain/models/account'
 import { HttpRequest } from '@/presentation/protocols'
-import { noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
 import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 import { DeleteError } from '@/presentation/errors/delete-error'
 import { Validator } from '@/presentation/protocols/validator'
+import { InvalidParamError } from '@/presentation/errors/invalid-params'
+import { response } from 'express'
 
 type Sut = {
   sut: DeleteAdminController
@@ -73,9 +75,16 @@ const fakeRequest = (): HttpRequest => ({
 describe('DeleteAdminController', () => {
   test('Should call IdParamValidation with correct id param', async () => {
     const { sut, idParamValidator } = makeSut()
-    const loadAccountSpy = jest.spyOn(idParamValidator, 'validate')
+    const idValidatorSpy = jest.spyOn(idParamValidator, 'validate')
     await sut.handle(fakeRequest())
-    expect(loadAccountSpy).toHaveBeenCalledWith(fakeRequest().params)
+    expect(idValidatorSpy).toHaveBeenCalledWith(fakeRequest().params)
+  })
+
+  test('Should return 400 if IdParamValidation returns error', async () => {
+    const { sut, idParamValidator } = makeSut()
+    jest.spyOn(idParamValidator, 'validate').mockReturnValueOnce(new InvalidParamError('id'))
+    const response = await sut.handle(fakeRequest())
+    expect(response).toEqual(badRequest(new InvalidParamError('id')))
   })
 
   test('Should call LoadAccountById with correct id', async () => {
