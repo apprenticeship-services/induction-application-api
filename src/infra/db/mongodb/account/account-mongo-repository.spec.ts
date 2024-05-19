@@ -74,11 +74,24 @@ describe('Account Mongo Repository', () => {
   })
 
   describe('Method: loadById()', () => {
-    test('Should return null if _id does not exists', async () => {
+    test('Should return account on success', async () => {
       const fakeId = new ObjectId()
       const sut = new AccountMongoRepository()
       const account = await sut.loadById(fakeId.toString())
       expect(account).toBeNull()
+    })
+
+    test('Should return true if _id exists', async () => {
+      const { insertedId } = await accountsCollection.insertOne(fakeAccountData())
+      const sut = new AccountMongoRepository()
+      const account = await sut.loadById(insertedId.toString())
+      expect(account).toBeTruthy()
+      expect(account._id).toBeTruthy()
+      expect(account.name).toBe(fakeAccountData().name)
+      expect(account.email).toBe(fakeAccountData().email)
+      expect(account.role).toBe(fakeAccountData().role)
+      expect(account.password).toBe(fakeAccountData().password)
+      expect(account.createdAt).toEqual(fakeAccountData().createdAt)
     })
   })
 })
