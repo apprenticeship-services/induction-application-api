@@ -72,6 +72,13 @@ describe('Register Admin Route', () => {
           .expect(204)
       })
 
+      test('Should return 400 if id is invalid', async () => {
+        const idParam = 'invalid'
+        await request(app)
+          .delete(`/api/admins/${idParam}`)
+          .expect(400)
+      })
+
       test('Should return 404 if account is not registered as admin', async () => {
         const { insertedId } = await accountsCollection.insertOne({
           name: 'any_name',
