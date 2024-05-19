@@ -1,4 +1,4 @@
-import { DbRegisterAdminAccount } from '@/data/db/account/db-register-admin-account'
+import { DbRegisterAdminAccount } from '@/data/use-cases/db/account/db-register-admin-account'
 import { Controller } from '@/presentation/protocols'
 import { registerAdminAccountValidatorFactory } from './register-admin-account-validator-factory'
 import { PasswordGenerator } from '@/infra/generator/password-generator/password-generator'

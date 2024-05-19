@@ -5,7 +5,7 @@ import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapte
 import { AccountMongoRepository } from '@/infra/db/mongodb/account/account-mongo-repository'
 import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
 import { TemplateEmailGenerator } from '@/infra/email/nodemailer/template-generator/template-email-generator'
-import { DbRegisterApprenticeAccount } from '@/data/db/account/db-register-apprentice-account'
+import { DbRegisterApprenticeAccount } from '@/data/use-cases/db/account/db-register-apprentice-account'
 import { ApprenticeMongoRepository } from '@/infra/db/mongodb/apprentice/apprentice-mongo-repository'
 import { RegisterApprenticeController } from '@/presentation/controllers/account/apprentices/register-apprentice-controller'
 import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
