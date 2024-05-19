@@ -2,7 +2,7 @@ import { DeleteAccountById } from '@/domain/use-cases/delete-account-by-id'
 import { LoadAccountById } from '@/domain/use-cases/load-account-by-id'
 import { AccountNotFoundError } from '@/presentation/errors/account-not-found-error'
 import { DeleteError } from '@/presentation/errors/delete-error'
-import { badRequest, forbidden, noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
+import { badRequest, noContent, notFound, serverError } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
 

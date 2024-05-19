@@ -3,6 +3,7 @@ import app from '../config/app'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import { Collection } from 'mongodb'
 import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
+import { AccountMongoRepository } from '@/infra/db/mongodb/account/account-mongo-repository'
 
 let accountsCollection: Collection
 
@@ -90,6 +91,23 @@ describe('Register Admin Route', () => {
         await request(app)
           .delete(`/api/admins/${idParam}`)
           .expect(404)
+      })
+
+      test('Should return 500 if some method throws', async () => {
+        const { insertedId } = await accountsCollection.insertOne({
+          name: 'any_name',
+          email: 'any_email@hotmail.com',
+          role: 'admin'
+        })
+
+        jest.spyOn(AccountMongoRepository.prototype, 'deleteById').mockImplementationOnce(async () => {
+          throw new Error()
+        })
+
+        const idParam = insertedId.toString()
+        await request(app)
+          .delete(`/api/admins/${idParam}`)
+          .expect(500)
       })
     })
   })
