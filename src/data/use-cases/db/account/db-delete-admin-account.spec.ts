@@ -27,10 +27,17 @@ const makeDeleteAccountRepositoryStub = (): DeleteAccountByIdRepository => {
 const fakeAccountId = ():string => 'any_id'
 
 describe('Delete Admin Account', () => {
-  test('Should call DeleteAccountRepository with correct value', async () => {
+  test('Should call DeleteAccountByIdRepository with correct value', async () => {
     const { sut, deleteAccountByIdRepository } = makeSut()
     const deleteSpy = jest.spyOn(deleteAccountByIdRepository, 'deleteById')
     await sut.deleteById(fakeAccountId())
     expect(deleteSpy).toHaveBeenCalledWith(fakeAccountId())
+  })
+
+  test('Should throw if DeleteAccountByIdRepository throws', async () => {
+    const { sut, deleteAccountByIdRepository } = makeSut()
+    jest.spyOn(deleteAccountByIdRepository, 'deleteById').mockReturnValueOnce(Promise.reject(new Error()))
+    const result = sut.deleteById(fakeAccountId())
+    expect(result).rejects.toThrow()
   })
 })
