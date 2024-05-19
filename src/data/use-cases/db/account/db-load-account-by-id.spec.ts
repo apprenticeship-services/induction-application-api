@@ -18,7 +18,7 @@ const makeSut = (): Sut => {
 
 const makeLoadAccountByIdRepositoryStub = (): LoadAccountByIdRepository => {
   class LoadAccountByIdRepositoryStub implements LoadAccountByIdRepository {
-    loadById (accountId: any): Promise<AccountModel> {
+    loadById (accountId: string): Promise<AccountModel> {
       return Promise.resolve(fakeAccountModel())
     }
   }

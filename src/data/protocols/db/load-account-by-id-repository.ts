@@ -1,5 +1,5 @@
 import { AccountModel } from '@/domain/models/account'
 
 export interface LoadAccountByIdRepository{
-    loadById(accountId):Promise<AccountModel>
+    loadById(accountId:string):Promise<AccountModel>
 }
