@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb'
+import { Collection, ObjectId } from 'mongodb'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { AccountMongoRepository } from './account-mongo-repository'
 import { RegisterAccountRepositoryParams } from '@/data/protocols/db/register-account-repository'
@@ -53,6 +53,15 @@ describe('Account Mongo Repository', () => {
       await accountsCollection.insertOne(fakeAccountData())
       const account = await sut.loadByEmail(fakeAccountData().email)
       expect(account).toBeTruthy()
+    })
+  })
+
+  describe('Method: deleteById()', () => {
+    test('Should return false if id does not exists', async () => {
+      const fakeId = new ObjectId()
+      const sut = new AccountMongoRepository()
+      const deleteResult = await sut.deleteById(fakeId.toString())
+      expect(deleteResult).toBe(false)
     })
   })
 })
