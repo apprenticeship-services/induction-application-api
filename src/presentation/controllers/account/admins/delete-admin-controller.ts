@@ -19,6 +19,7 @@ export class DeleteAdminController implements Controller {
     if (!account) {
       return notFound(new AccountNotFoundError())
     }
+    const deleteResult = await this.deleteAccountById.deleteById(account._id)
     return null
   }
 }
