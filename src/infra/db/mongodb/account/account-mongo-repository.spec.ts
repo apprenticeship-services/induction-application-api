@@ -72,4 +72,13 @@ describe('Account Mongo Repository', () => {
       expect(deleteResult).toBe(true)
     })
   })
+
+  describe('Method: loadById()', () => {
+    test('Should return null if _id does not exists', async () => {
+      const fakeId = new ObjectId()
+      const sut = new AccountMongoRepository()
+      const account = await sut.loadById(fakeId.toString())
+      expect(account).toBeNull()
+    })
+  })
 })
