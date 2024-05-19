@@ -4,3 +4,4 @@ dist
 coverage
 .vscode
 process.yml
+globalConfig.json
