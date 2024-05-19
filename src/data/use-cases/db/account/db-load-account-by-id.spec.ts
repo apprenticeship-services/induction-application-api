@@ -43,4 +43,11 @@ describe('DbLoadAccountById', () => {
     await sut.loadById(fakeAccountId())
     expect(loadByIdSpy).toHaveBeenCalledWith(fakeAccountId())
   })
+
+  test('Should throw if LoadAccountByIdRepository throws', async () => {
+    const { sut, loadAccountByIdRepositoryStub } = makeSut()
+    jest.spyOn(loadAccountByIdRepositoryStub, 'loadById').mockReturnValueOnce(Promise.reject(new Error()))
+    const account = sut.loadById(fakeAccountId())
+    expect(account).rejects.toThrow()
+  })
 })
