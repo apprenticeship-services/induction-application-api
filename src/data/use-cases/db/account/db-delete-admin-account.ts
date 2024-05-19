@@ -6,8 +6,7 @@ export class DbDeleteAdminAccountById implements DeleteAccount {
     this.deleteAccountByIdRepository = deleteAccountByIdRepository
   }
 
-  async deleteById (accountId: string): Promise<void> {
-    const result = await this.deleteAccountByIdRepository.deleteById(accountId)
-    return null
+  async deleteById (accountId: string): Promise<boolean> {
+    return await this.deleteAccountByIdRepository.deleteById(accountId)
   }
 }
