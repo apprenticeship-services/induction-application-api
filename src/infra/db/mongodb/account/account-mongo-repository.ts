@@ -4,6 +4,7 @@ import { MongoHelper } from '../helpers/mongo-helper'
 import { LoadAccountByEmailRepository } from '@/data/protocols/db/load-account-by-email-repository'
 import { DeleteAccountByIdRepository } from '@/data/protocols/db/delete-account-by-id-repository'
 import { ObjectId } from 'mongodb'
+import { LoadAccountByIdRepository } from '@/data/protocols/db/load-account-by-id-repository'
 
 export class AccountMongoRepository implements RegisterAccountRepository, LoadAccountByEmailRepository, DeleteAccountByIdRepository {
   async register (credentials: RegisterAccountRepositoryParams, configOps: object = {}): Promise<AccountModel> {
@@ -21,7 +22,7 @@ export class AccountMongoRepository implements RegisterAccountRepository, LoadAc
 
   async deleteById (accountId: string): Promise<boolean> {
     const accountsCollection = await MongoHelper.getCollection('accounts')
-    const deleteResult = await accountsCollection.deleteOne({ id: new ObjectId(accountId) })
+    const deleteResult = await accountsCollection.deleteOne({ _id: new ObjectId(accountId) })
     return deleteResult.deletedCount === 1
   }
 }
