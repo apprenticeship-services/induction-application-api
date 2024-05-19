@@ -40,4 +40,11 @@ describe('Delete Admin Account', () => {
     const result = sut.deleteById(fakeAccountId())
     expect(result).rejects.toThrow()
   })
+
+  test('Should return false if DeleteAccountByIdRepository returns false', async () => {
+    const { sut, deleteAccountByIdRepository } = makeSut()
+    jest.spyOn(deleteAccountByIdRepository, 'deleteById').mockReturnValueOnce(Promise.resolve(false))
+    const result = await sut.deleteById(fakeAccountId())
+    expect(result).toBe(false)
+  })
 })
