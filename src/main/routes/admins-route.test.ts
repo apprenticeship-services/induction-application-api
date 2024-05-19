@@ -11,7 +11,6 @@ describe('Register Admin Route', () => {
   afterAll(async () => await MongoHelper.disconnect())
   beforeEach(async () => {
     accountsCollection = await MongoHelper.getCollection('accounts')
-    await accountsCollection.deleteMany({})
   })
   afterEach(async () => await accountsCollection.deleteMany({}))
   describe('Register admin route', () => {
@@ -56,6 +55,21 @@ describe('Register Admin Route', () => {
             email: 'registered_email@hotmail.com'
           })
           .expect(403)
+      })
+    })
+
+    describe('DELETE /admins/:id', () => {
+      test('Should delete an admin account and return no content', async () => {
+        const { insertedId } = await accountsCollection.insertOne({
+          name: 'any_name',
+          email: 'any_email@hotmail.com',
+          role: 'admin'
+        })
+
+        const idParam = insertedId.toString()
+        await request(app)
+          .delete(`/api/admins/${idParam}`)
+          .expect(204)
       })
     })
   })
