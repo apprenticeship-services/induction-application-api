@@ -57,4 +57,11 @@ describe('DbLoadAccountById', () => {
     const account = await sut.loadById(fakeAccountId())
     expect(account).toBeNull()
   })
+
+  test('Should returns correct account on success', async () => {
+    const { sut } = makeSut()
+    const account = await sut.loadById(fakeAccountId())
+    expect(account).toBeTruthy()
+    expect(account._id).toBe(fakeAccountModel()._id)
+  })
 })
