@@ -106,6 +106,20 @@ describe('Register Admin Route', () => {
           .delete(`/api/apprentices/${randomId}`)
           .expect(404)
       })
+
+      test('Should return 404 if id is not linked to an apprentice role account', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice_email@hotmail.com',
+          role: 'admin'
+        })
+
+        const accountId = account.insertedId.toString()
+
+        await request(app)
+          .delete(`/api/apprentices/${accountId}`)
+          .expect(404)
+      })
     })
   })
 })
