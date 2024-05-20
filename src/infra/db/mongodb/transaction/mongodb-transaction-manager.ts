@@ -6,7 +6,10 @@ export class MongoDbTransactionManager implements TransactionManager {
   async executeTransaction<T> (transaction: (session?: ClientSession) => Promise<T>): Promise<T> {
     const session = MongoHelper.client.startSession()
     try {
-      const result = await session.withTransaction(async () => await transaction(session), {
+      const result = await session.withTransaction(async () => {
+        return transaction(session)
+      },
+      {
         readPreference: 'primary',
         retryWrites: true,
         readConcern: { level: 'local' },
