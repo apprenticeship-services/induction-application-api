@@ -58,5 +58,25 @@ describe('ApprenticeMongoRepository', () => {
       const apprenticeDocument = await apprenticesCollection.findOne<ApprenticeModel>({ accountId: new ObjectId(account.insertedId.toString()) })
       expect(apprenticeDocument).toBeFalsy()
     })
+
+    test('Should not delete document if document is not linked to any account', async () => {
+      const account = await accountsCollection.insertOne({
+        email: 'any_email@hotmail.com',
+        role: 'apprentice'
+      })
+
+      await apprenticesCollection.insertOne({
+        accountId: new ObjectId(account.insertedId.toString())
+      })
+
+      const differentId = new ObjectId().toString()
+
+      const sut = new ApprenticeMongoRepository()
+      const deleteResult = await sut.deleteById(differentId)
+      expect(deleteResult).toBe(false)
+
+      const apprenticeDocument = await apprenticesCollection.findOne<ApprenticeModel>({ accountId: new ObjectId(account.insertedId.toString()) })
+      expect(apprenticeDocument).toBeTruthy()
+    })
   })
 })
