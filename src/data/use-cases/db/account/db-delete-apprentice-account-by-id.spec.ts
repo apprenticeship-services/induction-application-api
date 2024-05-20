@@ -130,4 +130,14 @@ describe('DbDeleteApprenticeAccountById', () => {
     const deleteByIdResult = await sut.deleteById('any_id')
     expect(deleteByIdResult).toBe(true)
   })
+
+  test('Should return false if any method returns false', async () => {
+    const {
+      sut,
+      deleteAccountByIdRepositoryStub
+    } = makeSut()
+    jest.spyOn(deleteAccountByIdRepositoryStub, 'deleteById').mockReturnValueOnce(Promise.resolve(false))
+    const deleteByIdResult = await sut.deleteById('any_id')
+    expect(deleteByIdResult).toBe(false)
+  })
 })
