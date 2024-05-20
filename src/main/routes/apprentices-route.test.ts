@@ -6,6 +6,7 @@ import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/emai
 import { forbidden } from '@/presentation/helpers/http-helper'
 import { AlreadyExists } from '@/presentation/errors/already-exists'
 import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
+import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-delete-apprentice-account-by-id'
 
 let accountsCollection: Collection
 let apprenticesCollection: Collection
@@ -119,6 +120,22 @@ describe('Register Admin Route', () => {
         await request(app)
           .delete(`/api/apprentices/${accountId}`)
           .expect(404)
+      })
+
+      test('Should return 500 if deletion fails', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice_email@hotmail.com',
+          role: 'apprentice'
+        })
+
+        jest.spyOn(DbDeleteApprenticeAccountById.prototype, 'deleteById').mockReturnValueOnce(Promise.resolve(false))
+
+        const accountId = account.insertedId.toString()
+
+        await request(app)
+          .delete(`/api/apprentices/${accountId}`)
+          .expect(500)
       })
     })
   })
