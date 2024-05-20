@@ -91,6 +91,13 @@ describe('Register Admin Route', () => {
           .delete(`/api/apprentices/${accountId}`)
           .expect(204)
       })
+
+      test('Should return 400 if id is invalid', async () => {
+        const invalidId = 'invalid_id_format'
+        await request(app)
+          .delete(`/api/apprentices/${invalidId}`)
+          .expect(400)
+      })
     })
   })
 })
