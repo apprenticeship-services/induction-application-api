@@ -1,3 +1,3 @@
 export interface DeleteAccountByIdRepository{
-    deleteById(accountId: string):Promise<boolean>
+    deleteById(accountId: string, transactionOps?:object):Promise<boolean>
 }
