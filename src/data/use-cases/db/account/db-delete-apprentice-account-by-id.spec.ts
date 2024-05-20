@@ -82,4 +82,14 @@ describe('DbDeleteApprenticeAccountById', () => {
     const deleteResult = sut.deleteById('any_id')
     await expect(deleteResult).rejects.toThrow()
   })
+
+  test('Should call DeleteAccountByIdRepository with correct values', async () => {
+    const {
+      sut,
+      deleteAccountByIdRepositoryStub
+    } = makeSut()
+    const deleteAccountSpy = jest.spyOn(deleteAccountByIdRepositoryStub, 'deleteById')
+    await sut.deleteById('any_id')
+    expect(deleteAccountSpy).toHaveBeenCalledWith('any_id', { session })
+  })
 })
