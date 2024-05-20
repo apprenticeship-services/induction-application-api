@@ -122,4 +122,12 @@ describe('DbDeleteApprenticeAccountById', () => {
     const deleteApprenticeInfoSpy = sut.deleteById('any_id')
     await expect(deleteApprenticeInfoSpy).rejects.toThrow()
   })
+
+  test('Should return true on success', async () => {
+    const {
+      sut
+    } = makeSut()
+    const deleteByIdResult = await sut.deleteById('any_id')
+    expect(deleteByIdResult).toBe(true)
+  })
 })
