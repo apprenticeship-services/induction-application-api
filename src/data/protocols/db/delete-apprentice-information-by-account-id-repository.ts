@@ -1,3 +1,3 @@
 export interface DeleteApprenticeInformationByAccountIdRepository{
-    deleteById(accountId: string, transactionOps:object):Promise<boolean>
+    deleteById(accountId: string, transactionOps?:object):Promise<boolean>
 }
