@@ -52,7 +52,7 @@ const makeDeleteApprenticeInformationByAccountIdRepositoryStub = (): DeleteAppre
 
 const session = {}
 describe('DbDeleteApprenticeAccountById', () => {
-  test('Should call TransactionManager with correct transaction', async () => {
+  test('Should call TransactionManager with correct callback function', async () => {
     const {
       sut,
       transactionManagerStub,
@@ -71,5 +71,15 @@ describe('DbDeleteApprenticeAccountById', () => {
 
     expect(deleteAccountByIdSpy).toHaveBeenCalledWith('any_id', { session })
     expect(deleteApprenticeInfoSpy).toHaveBeenCalledWith('any_id', { session })
+  })
+
+  test('Should throw if TransactionManager throws', async () => {
+    const {
+      sut,
+      transactionManagerStub
+    } = makeSut()
+    jest.spyOn(transactionManagerStub, 'executeTransaction').mockReturnValueOnce(Promise.reject(new Error()))
+    const deleteResult = sut.deleteById('any_id')
+    await expect(deleteResult).rejects.toThrow()
   })
 })
