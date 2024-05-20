@@ -8,7 +8,6 @@ import { AccountNotFoundError } from '@/presentation/errors/account-not-found-er
 import { DeleteError } from '@/presentation/errors/delete-error'
 import { Validator } from '@/presentation/protocols/validator'
 import { InvalidParamError } from '@/presentation/errors/invalid-params'
-import { response } from 'express'
 
 type Sut = {
   sut: DeleteAdminController
