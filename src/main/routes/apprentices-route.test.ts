@@ -98,6 +98,14 @@ describe('Register Admin Route', () => {
           .delete(`/api/apprentices/${invalidId}`)
           .expect(400)
       })
+
+      test('Should return 404 if id is linked to any account', async () => {
+        const randomId = new ObjectId()
+
+        await request(app)
+          .delete(`/api/apprentices/${randomId}`)
+          .expect(404)
+      })
     })
   })
 })
