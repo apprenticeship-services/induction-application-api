@@ -1,10 +1,17 @@
 import { EncryptDetails } from '@/data/protocols/cryptography/encrypter'
 import { JwtAdapter } from './jwt-adapter'
 import jwt from 'jsonwebtoken'
+import { AccountTokenPayload } from '@/data/protocols/cryptography/decrypter'
 
 jest.mock('jsonwebtoken', () => ({
   async sign (): Promise<string> {
-    return 'json_token'
+    return new Promise(resolve => resolve('json_token'))
+  },
+  async verify (): Promise<AccountTokenPayload> {
+    return new Promise(resolve => resolve({
+      _id: 'any_id',
+      role: 'any_role'
+    }))
   }
 }))
 
@@ -34,6 +41,31 @@ describe('JwtAdapter', () => {
       const tokenResponse = await sut.encrypt(fakeEncryptDetails())
       expect(tokenResponse).toBeTruthy()
       expect(tokenResponse).toBe('json_token')
+    })
+  })
+
+  describe('verify()', () => {
+    test('Should call verify with correct values', async () => {
+      const sut = new JwtAdapter('secret')
+      const verifySpy = jest.spyOn(jwt, 'verify')
+      await sut.decrypt('any_token')
+      expect(verifySpy).toHaveBeenCalledWith('any_token', 'secret')
+    })
+
+    test('Should return decoded account on success', async () => {
+      const sut = new JwtAdapter('secret')
+      const value = await sut.decrypt('any_token')
+      expect(value._id).toBe('any_id')
+      expect(value.role).toBe('any_role')
+    })
+
+    test('Should throw if jwt verify throws', async () => {
+      const sut = new JwtAdapter('secret')
+      jest.spyOn(jwt, 'verify').mockImplementationOnce(() => {
+        throw new Error()
+      })
+      const promise = sut.decrypt('any_token')
+      expect(promise).rejects.toThrow()
     })
   })
 })
