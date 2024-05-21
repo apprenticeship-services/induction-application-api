@@ -1,6 +1,7 @@
 export type HttpRequest = {
     body?: any,
-    params?: any
+    params?: any,
+    cookies?:any,
     accountId?: string
 }
 
