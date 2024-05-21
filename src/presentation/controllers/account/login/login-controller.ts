@@ -29,7 +29,7 @@ export class LoginController implements Controller {
           value: accessToken,
           options: {
             httpOnly: true,
-            secure: true
+            secure: false
           }
         }
       }
