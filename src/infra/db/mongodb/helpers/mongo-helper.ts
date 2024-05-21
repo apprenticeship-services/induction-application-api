@@ -1,4 +1,4 @@
-import { Collection, MongoClient, WithId, Document } from 'mongodb'
+import { Collection, MongoClient, WithId, Document, ObjectId } from 'mongodb'
 
 export class MongoHelper {
   static client: MongoClient = null
@@ -25,10 +25,15 @@ export class MongoHelper {
 
   static mapObjectId<T> (dataObject: WithId<Document>): T {
     if (!dataObject) return null
-    const _idToString = dataObject._id.toString()
-    return {
-      ...dataObject,
-      _id: _idToString
-    } as T
+    const mappedObject: WithId<Document> = { ...dataObject }
+    for (const key in mappedObject) {
+      if (Object.prototype.hasOwnProperty.call(mappedObject, key)) {
+        const value = mappedObject[key]
+        if (ObjectId.isValid(value)) {
+          mappedObject[key] = value.toString()
+        }
+      }
+    }
+    return mappedObject as T
   }
 }
