@@ -41,4 +41,11 @@ describe('DbUpdateApprenticeInduction', () => {
     await sut.updateInduction(fakeAccountId)
     expect(updateSpy).toHaveBeenCalledWith(fakeUpdateInductionData())
   })
+
+  test('Should throw if UpdateApprenticeInductionRepository throws', async () => {
+    const { sut, updateApprenticeInductionRepositoryStub } = makeSut()
+    jest.spyOn(updateApprenticeInductionRepositoryStub, 'updateInduction').mockReturnValueOnce(Promise.reject(new Error()))
+    const updateResult = sut.updateInduction(fakeAccountId)
+    await expect(updateResult).rejects.toThrow()
+  })
 })
