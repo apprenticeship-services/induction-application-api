@@ -2,6 +2,8 @@ import { Collection, ObjectId } from 'mongodb'
 import { MongoHelper } from '../helpers/mongo-helper'
 import { ApprenticeMongoRepository } from './apprentice-mongo-repository'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
+import MockDate from 'mockdate'
+import { UpdateApprenticeInductionRepositoryParams } from '@/data/protocols/db/update-apprentice-induction-repository'
 
 let apprenticesCollection: Collection
 let accountsCollection: Collection
@@ -16,7 +18,10 @@ describe('ApprenticeMongoRepository', () => {
     await MongoHelper.disconnect()
   })
 
+  beforeEach(() => MockDate.set(new Date()))
+
   afterEach(async () => {
+    MockDate.reset()
     await accountsCollection.deleteMany({})
     await apprenticesCollection.deleteMany({})
   })
@@ -59,6 +64,35 @@ describe('ApprenticeMongoRepository', () => {
       const apprenticeDocument = await sut.loadById(accountId)
       expect(apprenticeDocument).toBeTruthy()
       expect(apprenticeDocument.accountId).toBe(accountId)
+    })
+  })
+
+  describe('METHOD: updateInduction()', () => {
+    test('Should update apprentice induction and updatedAt', async () => {
+      const newAccountId = new ObjectId().toString()
+      await apprenticesCollection.insertOne({
+        accountId: new ObjectId(newAccountId),
+        advisor: 'any_advisor',
+        trade: 'any_trade',
+        induction: false,
+        assessment: false,
+        updatedAt: null
+      })
+
+      const updateParams:UpdateApprenticeInductionRepositoryParams = {
+        accountId: newAccountId,
+        updatedAt: new Date()
+      }
+
+      const sut = new ApprenticeMongoRepository()
+      await sut.updateInduction(updateParams)
+
+      const updatedDocument = await apprenticesCollection.findOne({ accountId: new ObjectId(newAccountId) })
+      const updatedDocumentMapped = MongoHelper.mapObjectId<ApprenticeModel>(updatedDocument)
+      expect(updatedDocumentMapped.accountId).toBe(newAccountId)
+      expect(updatedDocumentMapped.induction).toBe(true)
+      expect(updatedDocumentMapped.updatedAt).toBeTruthy()
+      expect(updatedDocumentMapped.updatedAt).toEqual(updateParams.updatedAt)
     })
   })
 
