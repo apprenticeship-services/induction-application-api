@@ -42,6 +42,14 @@ describe('ApprenticeMongoRepository', () => {
     })
   })
 
+  describe('METHOD: loadById()', () => {
+    test('Should return null if apprentice information does not exist', async () => {
+      const sut = new ApprenticeMongoRepository()
+      const apprenticeDocument = await sut.loadById(new ObjectId().toString())
+      expect(apprenticeDocument).toBeNull()
+    })
+  })
+
   describe('METHOD: deleteById()', () => {
     test('Should delete apprentice document on success', async () => {
       const account = await accountsCollection.insertOne({
