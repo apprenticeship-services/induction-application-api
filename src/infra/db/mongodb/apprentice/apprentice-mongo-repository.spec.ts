@@ -48,6 +48,18 @@ describe('ApprenticeMongoRepository', () => {
       const apprenticeDocument = await sut.loadById(new ObjectId().toString())
       expect(apprenticeDocument).toBeNull()
     })
+
+    test('Should return apprentice document if exists', async () => {
+      const accountId = new ObjectId().toString()
+
+      await apprenticesCollection.insertOne({
+        accountId: new ObjectId(accountId)
+      })
+      const sut = new ApprenticeMongoRepository()
+      const apprenticeDocument = await sut.loadById(accountId)
+      expect(apprenticeDocument).toBeTruthy()
+      expect(apprenticeDocument.accountId).toBe(accountId)
+    })
   })
 
   describe('METHOD: deleteById()', () => {
