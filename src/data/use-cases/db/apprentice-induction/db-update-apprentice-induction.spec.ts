@@ -48,4 +48,10 @@ describe('DbUpdateApprenticeInduction', () => {
     const updateResult = sut.updateInduction(fakeAccountId)
     await expect(updateResult).rejects.toThrow()
   })
+
+  test('Should returns void on success', async () => {
+    const { sut } = makeSut()
+    const updateResult = await sut.updateInduction(fakeAccountId)
+    expect(updateResult).toBeUndefined()
+  })
 })
