@@ -6,7 +6,7 @@ import { LoadAccountByToken } from '@/domain/use-cases/load-account-by-token'
 
 export class AuthMiddleware implements Middleware {
   constructor (private readonly loadAccountByToken: LoadAccountByToken,
-    private readonly role?: string
+    private readonly role: string
   ) {
     this.loadAccountByToken = loadAccountByToken
   }
