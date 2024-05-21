@@ -1,6 +1,7 @@
 export type HttpRequest = {
     body?: any,
-    params?:any
+    params?: any
+    accountId?: string
 }
 
 export type HeaderType = {
