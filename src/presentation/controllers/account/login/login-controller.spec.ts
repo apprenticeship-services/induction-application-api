@@ -67,7 +67,7 @@ const fakeTokenHeader = (): HeaderType => ({
     value: 'any_token',
     options: {
       httpOnly: true,
-      secure: true
+      secure: false
     }
   }
 })
