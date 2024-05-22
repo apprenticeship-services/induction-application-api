@@ -5,12 +5,14 @@ import { DeleteApprenticeInformationByAccountIdRepository } from '@/data/protoco
 import { LoadApprenticeInformationByAccountIdRepository } from '@/data/protocols/db/load-apprentice-information-by-account-id-repository'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
 import { UpdateApprenticeInductionRepository, UpdateApprenticeInductionRepositoryParams } from '@/data/protocols/db/update-apprentice-induction-repository'
+import { UpdateApprenticeAssessmentRepository, UpdateApprenticeAssessmentRepositoryParams } from '@/data/protocols/db/update-apprentice-assessment-repository'
 
 export class ApprenticeMongoRepository implements
   RegisterApprenticeInformationRepository,
   LoadApprenticeInformationByAccountIdRepository,
   DeleteApprenticeInformationByAccountIdRepository,
-  UpdateApprenticeInductionRepository {
+  UpdateApprenticeInductionRepository,
+  UpdateApprenticeAssessmentRepository {
   async register (apprenticeInformation: ApprenticeInformationParams, configOps?: object): Promise<void> {
     const collection = await MongoHelper.getCollection('apprentices')
     await collection.insertOne({
@@ -36,6 +38,16 @@ export class ApprenticeMongoRepository implements
     await apprenticesCollection.findOneAndUpdate({ accountId: new ObjectId(data.accountId) }, {
       $set: {
         induction: true,
+        updatedAt: data.updatedAt
+      }
+    })
+  }
+
+  async updateAssessment (data: UpdateApprenticeAssessmentRepositoryParams): Promise<void> {
+    const apprenticesCollection = await MongoHelper.getCollection('apprentices')
+    await apprenticesCollection.findOneAndUpdate({ accountId: new ObjectId(data.accountId) }, {
+      $set: {
+        assessment: true,
         updatedAt: data.updatedAt
       }
     })
