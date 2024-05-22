@@ -4,6 +4,7 @@ import { ApprenticeMongoRepository } from './apprentice-mongo-repository'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
 import MockDate from 'mockdate'
 import { UpdateApprenticeInductionRepositoryParams } from '@/data/protocols/db/update-apprentice-induction-repository'
+import { UpdateApprenticeAssessmentRepositoryParams } from '@/data/protocols/db/update-apprentice-assessment-repository'
 
 let apprenticesCollection: Collection
 let accountsCollection: Collection
@@ -91,6 +92,35 @@ describe('ApprenticeMongoRepository', () => {
       const updatedDocumentMapped = MongoHelper.mapObjectId<ApprenticeModel>(updatedDocument)
       expect(updatedDocumentMapped.accountId).toBe(newAccountId)
       expect(updatedDocumentMapped.induction).toBe(true)
+      expect(updatedDocumentMapped.updatedAt).toBeTruthy()
+      expect(updatedDocumentMapped.updatedAt).toEqual(updateParams.updatedAt)
+    })
+  })
+
+  describe('METHOD: updateAssessment()', () => {
+    test('Should update apprentice assessment and updatedAt', async () => {
+      const newAccountId = new ObjectId().toString()
+      await apprenticesCollection.insertOne({
+        accountId: new ObjectId(newAccountId),
+        advisor: 'any_advisor',
+        trade: 'any_trade',
+        induction: true,
+        assessment: false,
+        updatedAt: new Date()
+      })
+
+      const updateParams:UpdateApprenticeAssessmentRepositoryParams = {
+        accountId: newAccountId,
+        updatedAt: new Date()
+      }
+
+      const sut = new ApprenticeMongoRepository()
+      await sut.updateAssessment(updateParams)
+
+      const updatedDocument = await apprenticesCollection.findOne({ accountId: new ObjectId(newAccountId) })
+      const updatedDocumentMapped = MongoHelper.mapObjectId<ApprenticeModel>(updatedDocument)
+      expect(updatedDocumentMapped.accountId).toBe(newAccountId)
+      expect(updatedDocumentMapped.assessment).toBe(true)
       expect(updatedDocumentMapped.updatedAt).toBeTruthy()
       expect(updatedDocumentMapped.updatedAt).toEqual(updateParams.updatedAt)
     })
