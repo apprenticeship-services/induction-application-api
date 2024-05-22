@@ -7,6 +7,7 @@ export const expressMiddlewareAdapter = (middleware: Middleware) => {
     const httpRequest: HttpRequest = {
       cookies: req.cookies
     }
+
     const httpResponse = await middleware.handle(httpRequest)
 
     if (httpResponse.statusCode === 200) {
