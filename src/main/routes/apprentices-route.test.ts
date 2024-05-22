@@ -8,6 +8,7 @@ import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-de
 import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapter'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
 import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice/apprentice-induction/db-update-apprentice-induction'
+import { DbUpdateApprenticeAssessment } from '@/data/use-cases/db/apprentice/apprentice-assessment/db-update-apprentice-assessment'
 
 let accountsCollection: Collection
 let apprenticesCollection: Collection
@@ -234,6 +235,172 @@ describe('Register Admin Route', () => {
         await agent
           .put('/api/apprentice/induction')
           .set('Cookie', cookies)
+          .expect(500)
+      })
+    })
+
+    describe('PATCH /apprentice/assessment', () => {
+      const requestBody = {
+        answers: {
+          question1: 'A',
+          question2: 'B',
+          question3: 'C',
+          question4: 'D',
+          question5: 'A'
+        }
+      }
+
+      test('Should return 204 and update apprentice document on success', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+        const accountId = account.insertedId.toString()
+        await apprenticesCollection.insertOne({
+          accountId: new ObjectId(accountId),
+          induction: true,
+          assessment: false,
+          updatedAt: null
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+
+        const cookies = response.headers['set-cookie']
+
+        const agent = request.agent(app)
+        await agent
+          .patch('/api/apprentice/assessment')
+          .set('Cookie', cookies)
+          .send(requestBody)
+          .expect(204)
+
+        const apprenticeDocument = await apprenticesCollection.findOne<ApprenticeModel>({ accountId: new ObjectId(accountId) })
+        expect(apprenticeDocument.assessment).toBe(true)
+        expect(apprenticeDocument.updatedAt).toBeTruthy()
+      })
+
+      test('Should return 403 if no token is provided', async () => {
+        await request(app)
+          .patch('/api/apprentice/assessment')
+          .expect(403)
+      })
+
+      test('Should return 400 if req.body is empty', async () => {
+        await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+
+        const cookies = response.headers['set-cookie']
+        const agent = request.agent(app)
+        await agent
+          .patch('/api/apprentice/assessment')
+          .set('Cookie', cookies)
+          .send({})
+          .expect(404)
+      })
+
+      test('Should return 400 if answers has invalid answer', async () => {
+        await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+
+        const cookies = response.headers['set-cookie']
+        const agent = request.agent(app)
+        await agent
+          .patch('/api/apprentice/assessment')
+          .set('Cookie', cookies)
+          .send({
+            answers: {
+              ...requestBody.answers,
+              question3: 'X'
+            }
+          })
+          .expect(404)
+      })
+
+      test('Should return 404 if accountId is not associated with an apprentice document', async () => {
+        await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+
+        const cookies = response.headers['set-cookie']
+        const agent = request.agent(app)
+        await agent
+          .patch('/api/apprentice/assessment')
+          .set('Cookie', cookies)
+          .send(requestBody)
+          .expect(404)
+      })
+
+      test('Should return 500 if one use case fails', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+        const accountId = account.insertedId.toString()
+        await apprenticesCollection.insertOne({
+          accountId: new ObjectId(accountId),
+          induction: true,
+          assessment: false,
+          updatedAt: null
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+        const cookies = response.headers['set-cookie']
+        jest.spyOn(DbUpdateApprenticeAssessment.prototype, 'updateAssessment').mockImplementationOnce(async () => { throw new Error() })
+        const agent = request.agent(app)
+        await agent
+          .patch('/api/apprentice/assessment')
+          .set('Cookie', cookies)
+          .send(requestBody)
           .expect(500)
       })
     })
