@@ -180,6 +180,31 @@ describe('Register Admin Route', () => {
           .put('/api/apprentice/induction')
           .expect(403)
       })
+
+      test('Should return 404 if accountId is not associated with an apprentice document', async () => {
+        await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+
+        const cookies = response.headers['set-cookie']
+
+        const agent = request.agent(app)
+        await agent
+          .put('/api/apprentice/induction')
+          .set('Cookie', cookies)
+          .expect(404)
+      })
     })
   })
 })
