@@ -4,9 +4,11 @@ import { registerApprenticeAccountControllerFactory } from '../factories/control
 import { deleteApprenticeControllerFactory } from '../factories/controller/account/delete-apprentice-account/delete-apprentice-account-controller-factory'
 import { updateApprenticeInductionControllerFactory } from '../factories/controller/apprentice/update-apprentice-induction/update-apprentice-induction-controller-factory'
 import { apprenticeMiddleware } from '../middlewares/apprentice-middleware'
+import { updateApprenticeAssessmentControllerFactory } from '../factories/controller/apprentice/update-apprentice-assessment/update-apprentice-assessment-controller-factory'
 
 export default (router: Router) => {
   router.post('/apprentices', expressRouteAdapter(registerApprenticeAccountControllerFactory()))
   router.delete('/apprentices/:id', expressRouteAdapter(deleteApprenticeControllerFactory()))
   router.put('/apprentice/induction', apprenticeMiddleware, expressRouteAdapter(updateApprenticeInductionControllerFactory()))
+  router.patch('/apprentice/assessment', apprenticeMiddleware, expressRouteAdapter(updateApprenticeAssessmentControllerFactory()))
 }
