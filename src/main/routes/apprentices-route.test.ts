@@ -7,6 +7,7 @@ import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongod
 import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-delete-apprentice-account-by-id'
 import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapter'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
+import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice-induction/db-update-apprentice-induction'
 
 let accountsCollection: Collection
 let apprenticesCollection: Collection
@@ -204,6 +205,36 @@ describe('Register Admin Route', () => {
           .put('/api/apprentice/induction')
           .set('Cookie', cookies)
           .expect(404)
+      })
+
+      test('Should return 500 if one use case fails', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+        const accountId = account.insertedId.toString()
+        await apprenticesCollection.insertOne({
+          accountId: new ObjectId(accountId),
+          induction: false,
+          updatedAt: null
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+        const cookies = response.headers['set-cookie']
+        jest.spyOn(DbUpdateApprenticeInduction.prototype, 'updateInduction').mockImplementationOnce(async () => { throw new Error() })
+        const agent = request.agent(app)
+        await agent
+          .put('/api/apprentice/induction')
+          .set('Cookie', cookies)
+          .expect(500)
       })
     })
   })
