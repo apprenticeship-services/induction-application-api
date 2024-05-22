@@ -41,36 +41,6 @@ describe('MongoDbTransactionManager', () => {
     expect(transactionResult).toBe('account created')
   })
 
-  test('should not commit transactions on fail', async () => {
-    const mockTransaction = async (session) => {
-      await accountsCollection.insertOne({
-        name: 'any_name',
-        email: 'any_email@hotmail.com',
-        role: 'any_role',
-        password: 'any_password',
-        createdAt: new Date()
-      }, { session })
-
-      await apprenticesCollection.insertOne({
-        accountId: '123',
-        name: 'any_name',
-        email: 'any_email@hotmail.com',
-        induction: false,
-        assessment: false
-      }, { session })
-
-      throw new Error()
-    }
-    const sut = new MongoDbTransactionManager()
-    const transactionResult = sut.executeTransaction(mockTransaction)
-
-    const account = await accountsCollection.findOne({ email: 'any_email@hotmail.com' })
-    const apprenticeInformation = await apprenticesCollection.findOne({ email: 'any_email@hotmail.com' })
-    expect(account).toBeNull()
-    expect(apprenticeInformation).toBeNull()
-    await expect(transactionResult).rejects.toThrow()
-  })
-
   test('should abort transaction on fail and not commit ', async () => {
     const sut = new MongoDbTransactionManager()
     const withTransaction = jest.spyOn(ClientSession.prototype, 'withTransaction')
