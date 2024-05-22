@@ -28,8 +28,20 @@ describe('Register Admin Route', () => {
     describe('POST /apprentices', () => {
       jest.spyOn(EmailServiceAdapter.prototype, 'sendRegistrationMail').mockReturnValueOnce(Promise.resolve(null))
       test('Should register an apprentice account and return no content', async () => {
-        await request(app)
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+
+        const cookies = loginResponse.headers['set-cookie']
+        await request.agent(app)
           .post('/api/apprentices')
+          .set('Cookie', cookies)
           .send({
             name: 'apprentice_name',
             email: 'apprentice_email@hotmail.com',
@@ -41,12 +53,24 @@ describe('Register Admin Route', () => {
 
       test('Should return 403 if apprentice email is already registered', async () => {
         await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
+        await accountsCollection.insertOne({
           name: 'apprentice_name',
           email: 'apprentice_email@hotmail.com'
         })
 
-        await request(app)
+        await request.agent(app)
           .post('/api/apprentices')
+          .set('Cookie', cookies)
           .send({
             name: 'apprentice_name',
             email: 'apprentice_email@hotmail.com',
@@ -57,16 +81,39 @@ describe('Register Admin Route', () => {
       })
 
       test('Should return 400 if required field is not provided', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
         await request(app)
           .post('/api/apprentices')
+          .set('Cookie', cookies)
           .send({ })
           .expect(400)
       })
 
       test('Should return 500 transaction fails', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         jest.spyOn(MongoDbTransactionManager.prototype, 'executeTransaction').mockRejectedValueOnce(new Error())
         await request(app)
           .post('/api/apprentices')
+          .set('Cookie', cookies)
           .send({
             name: 'apprentice_name',
             email: 'apprentice_email@hotmail.com',
@@ -79,6 +126,17 @@ describe('Register Admin Route', () => {
 
     describe('DELETE /apprentices/:id', () => {
       test('Should return 204 on success', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         const account = await accountsCollection.insertOne({
           name: 'apprentice_name',
           email: 'apprentice_email@hotmail.com',
@@ -92,25 +150,61 @@ describe('Register Admin Route', () => {
         })
         await request(app)
           .delete(`/api/apprentices/${accountId}`)
+          .set('Cookie', cookies)
           .expect(204)
       })
 
       test('Should return 400 if id is invalid', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         const invalidId = 'invalid_id_format'
         await request(app)
           .delete(`/api/apprentices/${invalidId}`)
+          .set('Cookie', cookies)
           .expect(400)
       })
 
       test('Should return 404 if id is linked to any account', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         const randomId = new ObjectId()
 
         await request(app)
           .delete(`/api/apprentices/${randomId}`)
+          .set('Cookie', cookies)
           .expect(404)
       })
 
       test('Should return 404 if id is not linked to an apprentice role account', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         const account = await accountsCollection.insertOne({
           name: 'apprentice_name',
           email: 'apprentice_email@hotmail.com',
@@ -121,10 +215,22 @@ describe('Register Admin Route', () => {
 
         await request(app)
           .delete(`/api/apprentices/${accountId}`)
+          .set('Cookie', cookies)
           .expect(404)
       })
 
       test('Should return 500 if deletion fails', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
         const account = await accountsCollection.insertOne({
           name: 'apprentice_name',
           email: 'apprentice_email@hotmail.com',
@@ -132,11 +238,10 @@ describe('Register Admin Route', () => {
         })
 
         jest.spyOn(DbDeleteApprenticeAccountById.prototype, 'deleteById').mockReturnValueOnce(Promise.resolve(false))
-
         const accountId = account.insertedId.toString()
-
         await request(app)
           .delete(`/api/apprentices/${accountId}`)
+          .set('Cookie', cookies)
           .expect(500)
       })
     })
