@@ -3,10 +3,10 @@ import app from '../config/app'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import { Collection, ObjectId } from 'mongodb'
 import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
-import { forbidden } from '@/presentation/helpers/http-helper'
-import { AlreadyExists } from '@/presentation/errors/already-exists'
 import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
 import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-delete-apprentice-account-by-id'
+import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapter'
+import { ApprenticeModel } from '@/domain/models/apprentice-model'
 
 let accountsCollection: Collection
 let apprenticesCollection: Collection
@@ -136,6 +136,43 @@ describe('Register Admin Route', () => {
         await request(app)
           .delete(`/api/apprentices/${accountId}`)
           .expect(500)
+      })
+    })
+
+    describe('PUT /apprentice/induction', () => {
+      test('Should return 204 and update apprentice document on success', async () => {
+        const account = await accountsCollection.insertOne({
+          name: 'apprentice_name',
+          email: 'apprentice@hotmail.com',
+          role: 'apprentice',
+          password: 'valid_password'
+        })
+        const accountId = account.insertedId.toString()
+        await apprenticesCollection.insertOne({
+          accountId: new ObjectId(accountId),
+          induction: false,
+          updatedAt: null
+        })
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const response = await request(app)
+          .post('/api/login')
+          .send({
+            email: 'apprentice@hotmail.com',
+            password: 'valid_password'
+          })
+          .expect(200)
+
+        const cookies = response.headers['set-cookie']
+
+        const agent = request.agent(app)
+        await agent
+          .put('/api/apprentice/induction')
+          .set('Cookie', cookies)
+          .expect(204)
+
+        const apprenticeDocument = await apprenticesCollection.findOne<ApprenticeModel>({ accountId: new ObjectId(accountId) })
+        expect(apprenticeDocument.induction).toBe(true)
+        expect(apprenticeDocument.updatedAt).toBeTruthy()
       })
     })
   })
