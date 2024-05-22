@@ -174,6 +174,12 @@ describe('Register Admin Route', () => {
         expect(apprenticeDocument.induction).toBe(true)
         expect(apprenticeDocument.updatedAt).toBeTruthy()
       })
+
+      test('Should return 403 if no token is provided', async () => {
+        await request(app)
+          .put('/api/apprentice/induction')
+          .expect(403)
+      })
     })
   })
 })
