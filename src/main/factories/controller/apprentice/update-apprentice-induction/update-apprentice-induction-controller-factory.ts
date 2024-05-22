@@ -1,7 +1,7 @@
-import { DbLoadApprenticeInformationByAccountId } from '@/data/use-cases/db/apprentice-induction/db-load-apprentice-information-by-account-id'
-import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice-induction/db-update-apprentice-induction'
+import { DbLoadApprenticeInformationByAccountId } from '@/data/use-cases/db/apprentice/load-apprentice-information-by-account-id/db-load-apprentice-information-by-account-id'
+import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice/apprentice-induction/db-update-apprentice-induction'
 import { ApprenticeMongoRepository } from '@/infra/db/mongodb/apprentice/apprentice-mongo-repository'
-import { UpdateApprenticeInductionController } from '@/presentation/controllers/apprentice-induction/induction/update-apprentice-induction-controller'
+import { UpdateApprenticeInductionController } from '@/presentation/controllers/apprentice/apprentice-induction/update-apprentice-induction-controller'
 import { Controller } from '@/presentation/protocols'
 
 export const updateApprenticeInductionControllerFactory = (): Controller => {

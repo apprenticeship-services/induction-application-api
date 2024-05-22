@@ -7,7 +7,7 @@ import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongod
 import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-delete-apprentice-account-by-id'
 import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapter'
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
-import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice-induction/db-update-apprentice-induction'
+import { DbUpdateApprenticeInduction } from '@/data/use-cases/db/apprentice/apprentice-induction/db-update-apprentice-induction'
 
 let accountsCollection: Collection
 let apprenticesCollection: Collection

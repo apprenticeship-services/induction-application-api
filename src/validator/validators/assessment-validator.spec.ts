@@ -1,16 +1,8 @@
 import { InvalidParamError } from '@/presentation/errors/invalid-params'
-import { AssessmentAnswers } from '../models/assessment-answers'
 import { AssessmentValidator } from './assessment-validator'
 import { MissingAnswerError } from '@/presentation/errors/missing-answer-error'
 import { InvalidAnswerError } from '@/presentation/errors/invalid-answer-error'
-
-const assessmentSchema: AssessmentAnswers = {
-  question1: 'A',
-  question2: 'B',
-  question3: 'C',
-  question4: 'D',
-  question5: 'A'
-}
+import { assessmentSchema } from '@/presentation/schemas/assessment-answers-schema'
 
 describe('AssessmentValidator', () => {
   test('Should return InvalidParamError if empty object is provided', () => {
