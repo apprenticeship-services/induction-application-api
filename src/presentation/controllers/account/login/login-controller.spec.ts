@@ -6,6 +6,7 @@ import { MissingParamError } from '@/presentation/errors/missing-param'
 import { badRequest, serverError, success, unauthorized } from '@/presentation/helpers/http-helper'
 import { Authentication, AuthenticationParams } from '@/domain/use-cases/authentication'
 import { UserCredentials } from '@/domain/models/user-credentials'
+import env from '@/main/config/env'
 
 type Sut = {
     sut: LoginController
@@ -67,7 +68,8 @@ const fakeTokenHeader = (): HeaderType => ({
     value: 'any_token',
     options: {
       httpOnly: true,
-      secure: false
+      secure: true,
+      sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
     }
   }
 })
