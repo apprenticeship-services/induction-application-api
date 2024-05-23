@@ -2,6 +2,7 @@ import { Authentication } from '@/domain/use-cases/authentication'
 import { badRequest, serverError, success, unauthorized } from '@/presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
+import env from '@/main/config/env'
 
 export class LoginController implements Controller {
   constructor (
@@ -29,7 +30,8 @@ export class LoginController implements Controller {
           value: accessToken,
           options: {
             httpOnly: true,
-            secure: false
+            secure: true,
+            sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
           }
         }
       }
