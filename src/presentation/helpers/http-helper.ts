@@ -34,7 +34,8 @@ export const success = (data: any, headers?: HeaderType) => ({
   headers
 })
 
-export const noContent = ():HttpResponse => ({
+export const noContent = (headers?:HeaderType):HttpResponse => ({
   statusCode: 204,
-  body: null
+  body: null,
+  headers
 })
