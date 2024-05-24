@@ -96,6 +96,13 @@ describe('DbLoadAccountByToken Use-case', () => {
     expect(account).toEqual(fakeAccountModel())
   })
 
+  test('Should return an account on success permission is reconnect', async () => {
+    const role = 'reconnect'
+    const { sut } = makeSut()
+    const account = await sut.loadByToken(fakeToken(), role)
+    expect(account).toEqual(fakeAccountModel())
+  })
+
   test('Should throw if Decrypter throws', async () => {
     const role = 'any_role'
     const { sut, decrypterStub } = makeSut()
