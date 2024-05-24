@@ -6,7 +6,8 @@ export const expressRouteAdapter = (controller: Controller) => {
     const httpRequest: HttpRequest = {
       body: req.body,
       params: req.params,
-      accountId: req.accountId
+      accountId: req.accountId,
+      reconnectToken: req.cookies?.token
     }
     const httpResponse = await controller.handle(httpRequest)
 
@@ -14,6 +15,9 @@ export const expressRouteAdapter = (controller: Controller) => {
       for (const [key, value] of Object.entries(httpResponse.headers)) {
         if (value.type === 'cookie') {
           res.cookie(key, value.value, value.options)
+        }
+        if (value.type === 'clearCookie') {
+          res.clearCookie(key, value.options)
         }
       }
     }

@@ -2,7 +2,8 @@ export type HttpRequest = {
     body?: any,
     params?: any,
     cookies?:any,
-    accountId?: string
+    accountId?: string,
+    reconnectToken?:string
 }
 
 export type HeaderType = {
