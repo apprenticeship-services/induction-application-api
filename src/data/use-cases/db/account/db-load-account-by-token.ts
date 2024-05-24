@@ -14,8 +14,9 @@ export class DbLoadAccountByToken implements LoadAccountByToken {
   async loadByToken (token: string, rolePermission: string): Promise<AccountModel> {
     const accountCredentials = await this.decrypter.decrypt(token)
     if (accountCredentials?._id &&
-        accountCredentials?.role &&
-        accountCredentials?.role === rolePermission
+        ((accountCredentials?.role &&
+      accountCredentials?.role === rolePermission) ||
+      (rolePermission === 'reconnect'))
     ) {
       const account = await this.loadAccountByIdRepository.loadById(accountCredentials._id)
       if (account) {
