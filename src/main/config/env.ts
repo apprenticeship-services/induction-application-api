@@ -1,6 +1,6 @@
 export default {
   nodeEnvironment: process.env.NODE_ENV || 'development',
-  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/cetb-node-api',
+  mongoUri: process.env.MONGO_URL || 'mongodb://localhost:27017/cetb-node-api',
   port: process.env.PORT || 4000,
   salt: process.env.SALT || 12,
   jwtSecretToken: process.env.JSON_SECRET_TOKEN || '8DB3B6393AA5BC15120CCE32A610EFB8B88DCF6E27D68F681C53D48894D44B2C',
