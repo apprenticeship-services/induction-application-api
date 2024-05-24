@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb'
+import { Collection, ObjectId } from 'mongodb'
 import { MongoHelper } from '@/infra/db/mongodb/helpers/mongo-helper'
 import request from 'supertest'
 import app from '../config/app'
@@ -92,6 +92,40 @@ describe('Login Route', () => {
       expect(decodedToken).toBeDefined()
       expect(decodedToken._id).toBe(account.insertedId.toString())
       expect(decodedToken.role).toBe('test_role')
+    })
+  })
+
+  describe('GET /me', () => {
+    test('Should return 200 if token is provided on headers', async () => {
+      const account = await accountsCollection.insertOne({
+        name: 'any_name',
+        email: 'any_email@hotmail.com',
+        role: 'any_role'
+      })
+      const token = jwt.sign({ _id: account.insertedId.toString(), role: 'any_role' }, env.jwtSecretToken)
+
+      await request(app)
+        .get('/api/me')
+        .set('Cookie', `token=${token}`)
+        .expect(200)
+    })
+
+    test('Should return 204 if token is not provided', async () => {
+      const token = ''
+
+      await request(app)
+        .get('/api/me')
+        .set('Cookie', `token=${token}`)
+        .expect(204)
+    })
+
+    test('Should return 403 if token provided is not linked to any account', async () => {
+      const token = jwt.sign({ _id: new ObjectId().toString(), role: 'any_role' }, env.jwtSecretToken)
+
+      await request(app)
+        .get('/api/me')
+        .set('Cookie', `token=${token}`)
+        .expect(403)
     })
   })
 })
