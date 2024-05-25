@@ -7,3 +7,4 @@ process.yml
 globalConfig.json
 ./data
 test-files
+!src/data
