@@ -5,6 +5,7 @@ import { ApprenticeModel } from '@/domain/models/apprentice-model'
 import MockDate from 'mockdate'
 import { UpdateApprenticeInductionRepositoryParams } from '@/data/protocols/db/update-apprentice-induction-repository'
 import { UpdateApprenticeAssessmentRepositoryParams } from '@/data/protocols/db/update-apprentice-assessment-repository'
+import { faker } from '@faker-js/faker'
 
 let apprenticesCollection: Collection
 let accountsCollection: Collection
@@ -161,6 +162,76 @@ describe('ApprenticeMongoRepository', () => {
 
       const apprenticeDocument = await apprenticesCollection.findOne<ApprenticeModel>({ accountId: new ObjectId(account.insertedId.toString()) })
       expect(apprenticeDocument).toBeTruthy()
+    })
+  })
+
+  describe('METHOD: loadByDateRange()', () => {
+    beforeEach(async () => {
+      const accountsCollection = await MongoHelper.getCollection('accounts')
+      const apprenticesCollection = await MongoHelper.getCollection('apprentices')
+
+      for (let i = 0; i < 5; i++) {
+        const randomDate = faker.date.between(new Date('2024-05-01'), new Date('2024-05-30'))
+        const account = {
+          name: faker.name.fullName(),
+          email: faker.internet.email().toLowerCase(),
+          role: 'apprentice',
+          createdAt: randomDate
+        }
+        const accountDoc = await accountsCollection.insertOne(account)
+        const apprenticeInfoDoc = {
+          accountId: new ObjectId(accountDoc.insertedId.toString()),
+          advisor: faker.name.fullName(),
+          trade: faker.name.jobType(),
+          induction: false,
+          assessment: false,
+          updatedAt: null
+        }
+        await apprenticesCollection.insertOne(apprenticeInfoDoc)
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const randomDate = faker.date.between(new Date('2024-04-01'), new Date('2024-04-30'))
+        const account = {
+          name: faker.name.fullName(),
+          email: faker.internet.email().toLowerCase(),
+          role: 'apprentice',
+          createdAt: randomDate
+        }
+        const accountDoc = await accountsCollection.insertOne(account)
+        const apprenticeInfoDoc = {
+          accountId: new ObjectId(accountDoc.insertedId.toString()),
+          advisor: faker.name.fullName(),
+          trade: faker.name.jobType(),
+          induction: false,
+          assessment: false,
+          updatedAt: null
+        }
+        await apprenticesCollection.insertOne(apprenticeInfoDoc)
+      }
+      const data = await accountsCollection.find({}).toArray()
+      console.log(data)
+    })
+    test('Should return empty array if no apprentices are found given a date range', async () => {
+      const sut = new ApprenticeMongoRepository()
+      const apprentices = await sut.loadByDateRange(new Date('2024-01-01'), new Date('2024-01-31'))
+      expect(apprentices).toEqual([])
+    })
+
+    test('Should return apprentices array if they are found given a date range', async () => {
+      const sut = new ApprenticeMongoRepository()
+      const apprentices = await sut.loadByDateRange(new Date('2024-04-01'), new Date('2024-04-30'))
+      expect(apprentices.length).toBe(5)
+    })
+
+    test('Should return apprentices in descending order by createdAt date', async () => {
+      const sut = new ApprenticeMongoRepository()
+      const apprentices = await sut.loadByDateRange(new Date('2024-04-01'), new Date('2024-04-30'))
+      for (let i = 0; i < apprentices.length - 1; i++) {
+        const currentCreatedAt = new Date(apprentices[i].createdAt).getTime()
+        const nextCreatedAt = new Date(apprentices[i + 1].createdAt).getTime()
+        expect(currentCreatedAt).toBeGreaterThanOrEqual(nextCreatedAt)
+      }
     })
   })
 })
