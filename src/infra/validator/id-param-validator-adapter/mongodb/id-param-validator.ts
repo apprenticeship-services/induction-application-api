@@ -1,8 +1,8 @@
-import { IdParamValidator } from '@/validator/protocols/id-param-validator'
+import { ValueValidator } from '@/validator/protocols/value-validator'
 import { ObjectId } from 'mongodb'
 
-export class IdParamValidatorAdapter implements IdParamValidator {
-  isValid (id: string): boolean {
-    return ObjectId.isValid(id)
+export class IdParamValidatorAdapter implements ValueValidator {
+  isValid (value: string): boolean {
+    return ObjectId.isValid(value)
   }
 }

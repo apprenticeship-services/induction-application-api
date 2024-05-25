@@ -1,9 +1,9 @@
 import { Validator } from '@/presentation/protocols/validator'
-import { EmailValidator } from '../protocols/email-validator'
 import { InvalidParamError } from '@/presentation/errors/invalid-params'
+import { ValueValidator } from '../protocols/value-validator'
 
 export class EmailValidation implements Validator {
-  constructor (private readonly fieldName: string, private readonly emailValidator: EmailValidator) {
+  constructor (private readonly fieldName: string, private readonly emailValidator: ValueValidator) {
     this.fieldName = fieldName
     this.emailValidator = emailValidator
   }

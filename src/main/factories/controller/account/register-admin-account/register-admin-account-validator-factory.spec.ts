@@ -1,12 +1,12 @@
-import { EmailValidator } from '@/validator/protocols/email-validator'
 import { EmailValidation } from '@/validator/validators/email-validator'
 import { RequiredFieldValidator } from '@/validator/validators/requires-field-validator'
 import { ValidatorComposite } from '@/validator/validators/validation-composite'
 import { registerAdminAccountValidatorFactory } from './register-admin-account-validator-factory'
+import { ValueValidator } from '@/validator/protocols/value-validator'
 
 jest.mock('@/validator/validators/validation-composite')
-const makeEmailValidatorStub = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
+const makeEmailValidatorStub = (): ValueValidator => {
+  class EmailValidatorStub implements ValueValidator {
     isValid (email: string): boolean {
       return true
     }

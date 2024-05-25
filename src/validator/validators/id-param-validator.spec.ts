@@ -1,10 +1,10 @@
 import { IdParamValidation } from './id-param-validator'
-import { IdParamValidator } from '../protocols/id-param-validator'
 import { InvalidParamError } from '@/presentation/errors/invalid-params'
+import { ValueValidator } from '../protocols/value-validator'
 
 type SutType = {
     sut: IdParamValidation,
-    idParamValidator: IdParamValidator,
+    idParamValidator: ValueValidator,
 }
 const makeSut = (): SutType => {
   const idParamValidator = makeIdParamValidatorStub()
@@ -15,8 +15,8 @@ const makeSut = (): SutType => {
   }
 }
 
-const makeIdParamValidatorStub = (): IdParamValidator => {
-  class IdParamValidatorStub implements IdParamValidator {
+const makeIdParamValidatorStub = (): ValueValidator => {
+  class IdParamValidatorStub implements ValueValidator {
     isValid (id: string): boolean {
       return true
     }
