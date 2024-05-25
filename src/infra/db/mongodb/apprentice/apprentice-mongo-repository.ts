@@ -6,13 +6,17 @@ import { LoadApprenticeInformationByAccountIdRepository } from '@/data/protocols
 import { ApprenticeModel } from '@/domain/models/apprentice-model'
 import { UpdateApprenticeInductionRepository, UpdateApprenticeInductionRepositoryParams } from '@/data/protocols/db/update-apprentice-induction-repository'
 import { UpdateApprenticeAssessmentRepository, UpdateApprenticeAssessmentRepositoryParams } from '@/data/protocols/db/update-apprentice-assessment-repository'
+import { LoadApprenticesByDateRangeRepository } from '@/data/protocols/db/load-apprentices-by-date-range-repository'
+import { ApprenticeInformationModel } from '@/domain/use-cases/load-apprentices-by-date-range'
+import { MongoQueryBuilder } from '../helpers/mongo-query-builder'
 
 export class ApprenticeMongoRepository implements
   RegisterApprenticeInformationRepository,
   LoadApprenticeInformationByAccountIdRepository,
   DeleteApprenticeInformationByAccountIdRepository,
   UpdateApprenticeInductionRepository,
-  UpdateApprenticeAssessmentRepository {
+  UpdateApprenticeAssessmentRepository,
+  LoadApprenticesByDateRangeRepository {
   async register (apprenticeInformation: ApprenticeInformationParams, configOps?: object): Promise<void> {
     const collection = await MongoHelper.getCollection('apprentices')
     await collection.insertOne({
@@ -51,5 +55,43 @@ export class ApprenticeMongoRepository implements
         updatedAt: data.updatedAt
       }
     })
+  }
+
+  async loadByDateRange (startDate: Date, endDate: Date): Promise<ApprenticeInformationModel[]> {
+    const collection = await MongoHelper.getCollection('accounts')
+    const query = new MongoQueryBuilder()
+      .match({
+        role: 'apprentice',
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
+      })
+      .lookup({
+        from: 'apprentices',
+        foreignField: 'accountId',
+        localField: '_id',
+        as: 'apprenticeInformation'
+      })
+      .unwind({
+        path: '$apprenticeInformation'
+      })
+      .project({
+        accountId: { $toString: '$_id' },
+        name: '$name',
+        email: '$email',
+        role: '$role',
+        createdAt: '$createdAt',
+        advisor: '$apprenticeInformation.advisor',
+        trade: '$apprenticeInformation.trade',
+        induction: '$apprenticeInformation.induction',
+        assessment: '$apprenticeInformation.assessment',
+        updatedAt: '$apprenticeInformation.updatedAt'
+      })
+      .sort({ createdAt: -1 })
+      .build()
+
+    const apprentices = await collection.aggregate(query).toArray()
+    return apprentices as ApprenticeInformationModel[]
   }
 }
