@@ -77,6 +77,7 @@ export class ApprenticeMongoRepository implements
         path: '$apprenticeInformation'
       })
       .project({
+        _id: 0,
         accountId: { $toString: '$_id' },
         name: '$name',
         email: '$email',
