@@ -5,7 +5,7 @@ export const cors = (req: Request, res: Response, next: NextFunction): void => {
   const origin = req.headers.origin
 
   if (env.nodeEnvironment === 'development') {
-    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Origin', origin || '')
   }
 
   if (env.nodeEnvironment === 'production') {
