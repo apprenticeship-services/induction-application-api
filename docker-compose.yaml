@@ -23,6 +23,7 @@ services:
     volumes: 
       - ./dist/:/usr/workspace/cetb-node-api/dist/
       - ./package.json:/usr/workspace/cetb-node-api/package.json
+      - ./assets/:/usr/workspace/cetb-node-api/assets/
     ports: 
       - "4000:4000"
       - "9222:9222"
