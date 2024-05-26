@@ -210,7 +210,6 @@ describe('ApprenticeMongoRepository', () => {
         await apprenticesCollection.insertOne(apprenticeInfoDoc)
       }
       const data = await accountsCollection.find({}).toArray()
-      console.log(data)
     })
     test('Should return empty array if no apprentices are found given a date range', async () => {
       const sut = new ApprenticeMongoRepository()

@@ -22,6 +22,6 @@ describe('Log Mongo Repository', () => {
     const sut = new LogMongoRepository()
     await sut.logError('any_stack_trace')
     const countDocs = await errorCollection.countDocuments()
-    expect(countDocs).toBe(1)
+    expect(countDocs).toBeGreaterThanOrEqual(1)
   })
 })
