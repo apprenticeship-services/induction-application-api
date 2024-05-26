@@ -2,8 +2,10 @@ import { DbDeleteApprenticeAccountById } from '@/data/use-cases/db/account/db-de
 import { DbLoadAccountById } from '@/data/use-cases/db/account/db-load-account-by-id'
 import { AccountMongoRepository } from '@/infra/db/mongodb/account/account-mongo-repository'
 import { ApprenticeMongoRepository } from '@/infra/db/mongodb/apprentice/apprentice-mongo-repository'
+import { LogMongoRepository } from '@/infra/db/mongodb/log/log-mongo-repository'
 import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
 import { IdParamValidatorAdapter } from '@/infra/validator/id-param-validator-adapter/mongodb/id-param-validator'
+import { LogControllerDecorator } from '@/main/decorators/log/log-controller-decorator'
 import { DeleteApprenticeController } from '@/presentation/controllers/account/apprentices/delete-apprentice-account-controller'
 import { Controller } from '@/presentation/protocols'
 import { IdParamValidation } from '@/validator/validators/id-param-validator'
@@ -16,5 +18,5 @@ export const deleteApprenticeControllerFactory = (): Controller => {
   const deleteAccountByIdRepository = new AccountMongoRepository()
   const deleteApprenticeAccountByIdRepository = new ApprenticeMongoRepository()
   const deleteApprenticeAccountById = new DbDeleteApprenticeAccountById(transactionManager, deleteAccountByIdRepository, deleteApprenticeAccountByIdRepository)
-  return new DeleteApprenticeController(idParamValidator, loadAccountById, deleteApprenticeAccountById)
+  return new LogControllerDecorator(new DeleteApprenticeController(idParamValidator, loadAccountById, deleteApprenticeAccountById), new LogMongoRepository())
 }

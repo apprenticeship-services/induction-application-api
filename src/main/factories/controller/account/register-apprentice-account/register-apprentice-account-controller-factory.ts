@@ -9,6 +9,8 @@ import { DbRegisterApprenticeAccount } from '@/data/use-cases/db/account/db-regi
 import { ApprenticeMongoRepository } from '@/infra/db/mongodb/apprentice/apprentice-mongo-repository'
 import { RegisterApprenticeController } from '@/presentation/controllers/account/apprentices/register-apprentice-controller'
 import { MongoDbTransactionManager } from '@/infra/db/mongodb/transaction/mongodb-transaction-manager'
+import { LogControllerDecorator } from '@/main/decorators/log/log-controller-decorator'
+import { LogMongoRepository } from '@/infra/db/mongodb/log/log-mongo-repository'
 
 export const registerApprenticeAccountControllerFactory = (): Controller => {
   const loadAccountByEmailRepository = new AccountMongoRepository()
@@ -21,5 +23,5 @@ export const registerApprenticeAccountControllerFactory = (): Controller => {
   const registrationEmailService = new EmailServiceAdapter(templateGenerator)
   const registerApprenticeAccountUseCase = new DbRegisterApprenticeAccount(loadAccountByEmailRepository, passwordGenerator, hasher, transactionManager, registerAccountRepository, registerApprenticeInformationRepository, registrationEmailService)
   const validators = registerApprenticeAccountValidatorFactory()
-  return new RegisterApprenticeController(validators, registerApprenticeAccountUseCase)
+  return new LogControllerDecorator(new RegisterApprenticeController(validators, registerApprenticeAccountUseCase), new LogMongoRepository())
 }

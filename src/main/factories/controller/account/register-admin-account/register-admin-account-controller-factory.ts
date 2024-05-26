@@ -7,6 +7,8 @@ import { AccountMongoRepository } from '@/infra/db/mongodb/account/account-mongo
 import { EmailServiceAdapter } from '@/infra/email/nodemailer/email-service/email-service-adapter'
 import { TemplateEmailGenerator } from '@/infra/email/nodemailer/template-generator/template-email-generator'
 import { RegisterAdminAccountController } from '@/presentation/controllers/account/admins/register-admin-controller'
+import { LogControllerDecorator } from '@/main/decorators/log/log-controller-decorator'
+import { LogMongoRepository } from '@/infra/db/mongodb/log/log-mongo-repository'
 
 export const registerAdminAccountControllerFactory = (): Controller => {
   const loadAccountByEmailRepository = new AccountMongoRepository()
@@ -17,5 +19,5 @@ export const registerAdminAccountControllerFactory = (): Controller => {
   const registrationEmailService = new EmailServiceAdapter(templateGenerator)
   const registerAdminAccountUseCase = new DbRegisterAdminAccount(loadAccountByEmailRepository, passwordGenerator, hasher, registerAccountRepository, registrationEmailService)
   const validators = registerAdminAccountValidatorFactory()
-  return new RegisterAdminAccountController(registerAdminAccountUseCase, validators)
+  return new LogControllerDecorator(new RegisterAdminAccountController(registerAdminAccountUseCase, validators), new LogMongoRepository())
 }

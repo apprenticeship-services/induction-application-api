@@ -1,6 +1,8 @@
 import { DbLoadApprenticeByDateRange } from '@/data/use-cases/db/apprentice/load-apprentices-by-date-range/db-load-apprentices-by-date-range'
 import { ApprenticeMongoRepository } from '@/infra/db/mongodb/apprentice/apprentice-mongo-repository'
+import { LogMongoRepository } from '@/infra/db/mongodb/log/log-mongo-repository'
 import { DateParamValidatorAdapter } from '@/infra/validator/date-param-validator-adapter/date-param-validator-adapter'
+import { LogControllerDecorator } from '@/main/decorators/log/log-controller-decorator'
 import { GetApprenticesByDateRangeController } from '@/presentation/controllers/apprentice/get-apprentices-by-date-range/get-apprentices-by-date-range-controller'
 import { Controller } from '@/presentation/protocols'
 import { Validator } from '@/presentation/protocols/validator'
@@ -19,5 +21,5 @@ export const getApprenticesByDateRangeControllerFactory = (): Controller => {
   const validator = new ValidatorComposite(validations)
   const loadApprenticesByDateRangeRepository = new ApprenticeMongoRepository()
   const loadApprenticesByDateRange = new DbLoadApprenticeByDateRange(loadApprenticesByDateRangeRepository)
-  return new GetApprenticesByDateRangeController(validator, loadApprenticesByDateRange)
+  return new LogControllerDecorator(new GetApprenticesByDateRangeController(validator, loadApprenticesByDateRange), new LogMongoRepository())
 }

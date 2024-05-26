@@ -5,11 +5,14 @@ import { AccountMongoRepository } from '@/infra/db/mongodb/account/account-mongo
 import { BcryptAdapter } from '@/infra/cryptography/bcrypt-adapter/bcrypt-adapter'
 import { JwtAdapter } from '@/infra/cryptography/jwt-adapter/jwt-adapter'
 import env from '@/main/config/env'
+import { LogMongoRepository } from '@/infra/db/mongodb/log/log-mongo-repository'
+import { LogControllerDecorator } from '@/main/decorators/log/log-controller-decorator'
+import { Controller } from '@/presentation/protocols'
 
-export const loginControllerFactory = (): LoginController => {
+export const loginControllerFactory = (): Controller => {
   const loadAccountByEmailRepository = new AccountMongoRepository()
   const hashComparer = new BcryptAdapter()
   const encrypter = new JwtAdapter(env.jwtSecretToken)
   const authentication = new DbAuthentication(loadAccountByEmailRepository, hashComparer, encrypter)
-  return new LoginController(loginValidatorFactory(), authentication)
+  return new LogControllerDecorator(new LoginController(loginValidatorFactory(), authentication), new LogMongoRepository())
 }
