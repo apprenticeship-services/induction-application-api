@@ -13,11 +13,11 @@ export class GetApprenticesByDateRangeController implements Controller {
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
     try {
-      const error = this.validator.validate(request.body)
+      const error = this.validator.validate(request.query)
       if (error) {
         return badRequest(error)
       }
-      const { startDate, endDate } = request.body
+      const { startDate, endDate } = request.query
       const apprentices = await this.loadApprenticesByDateRange.loadByDateRange(startDate, endDate)
       return success(apprentices)
     } catch (error) {

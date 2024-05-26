@@ -6,6 +6,7 @@ export const expressRouteAdapter = (controller: Controller) => {
     const httpRequest: HttpRequest = {
       body: req.body,
       params: req.params,
+      query: req.query,
       accountId: req.accountId,
       reconnectToken: req.cookies?.token
     }

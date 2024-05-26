@@ -1,6 +1,7 @@
 export type HttpRequest = {
     body?: any,
     params?: any,
+    query?: any,
     cookies?:any,
     accountId?: string,
     reconnectToken?:string

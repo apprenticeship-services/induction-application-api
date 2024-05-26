@@ -72,7 +72,7 @@ const startDate = new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
 const endDate = new Date()
 
 const fakeRequest = (): HttpRequest => ({
-  body: {
+  query: {
     startDate,
     endDate
   }
@@ -85,7 +85,7 @@ describe('GetApprenticesByDateRangeController', () => {
     const { sut, validatorStub } = makeSut()
     const validatorSpy = jest.spyOn(validatorStub, 'validate')
     await sut.handle(fakeRequest())
-    expect(validatorSpy).toHaveBeenCalledWith(fakeRequest().body)
+    expect(validatorSpy).toHaveBeenCalledWith(fakeRequest().query)
   })
 
   test('Should return 400 if Validator returns error', async () => {
@@ -118,7 +118,9 @@ describe('GetApprenticesByDateRangeController', () => {
 
   test('Should return 500 if LoadApprenticesByDateRange fails', async () => {
     const { sut, loadApprenticesByDateRangeStub } = makeSut()
-    jest.spyOn(loadApprenticesByDateRangeStub, 'loadByDateRange').mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(loadApprenticesByDateRangeStub, 'loadByDateRange').mockImplementationOnce(async () => {
+      throw new Error()
+    })
     const response = await sut.handle(fakeRequest())
     expect(response).toEqual(serverError(new Error()))
   })
