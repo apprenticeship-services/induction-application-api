@@ -1,11 +1,16 @@
 import { noContent, serverError } from '@/presentation/helpers/http-helper'
 import { LogoutController } from './logout-controller'
+import env from '@/main/config/env'
 
 const cleanTokenHeader = {
   token: {
     type: 'clearCookie',
     value: null,
-    options: null
+    options: {
+      httpOnly: true,
+      secure: true,
+      sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
+    }
   }
 }
 

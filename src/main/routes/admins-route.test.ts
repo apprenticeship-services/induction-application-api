@@ -224,5 +224,39 @@ describe('Register Admin Route', () => {
           .expect(500)
       })
     })
+
+    describe('GET /admins', () => {
+      test('Should return admins', async () => {
+        await accountsCollection.insertOne({
+          email: 'admin@hotmail.com',
+          role: 'admin'
+        })
+
+        jest.spyOn(BcryptAdapter.prototype, 'compare').mockReturnValueOnce(Promise.resolve(true))
+        const loginResponse = await request(app).post('/api/login').send({
+          email: 'admin@hotmail.com',
+          password: 'any'
+        })
+        const cookies = loginResponse.headers['set-cookie']
+
+        await accountsCollection.insertOne({
+          name: 'any_name',
+          email: 'any_email@hotmail.com',
+          role: 'admin'
+        })
+
+        await accountsCollection.insertOne({
+          email: 'another_admin@hotmail.com',
+          role: 'admin'
+        })
+
+        const response = await request(app)
+          .get('/api/admins')
+          .set('Cookie', cookies)
+          .expect(200)
+
+        expect(response.body.length).toBe(3)
+      })
+    })
   })
 })
