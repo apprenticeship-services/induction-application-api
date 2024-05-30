@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import axios from '@/api/axios/axios'
 import { toast } from 'sonner'
+import { UserAnswer } from '@/components/customs/questionnaire/types/UserAnswer'
 
 const fetchApprenticeDetails = async () => {
   const { data } = await axios.get('/api/apprentice')
@@ -10,6 +11,14 @@ const fetchApprenticeDetails = async () => {
 
 const completeInduction = async () => {
   await axios.put('/api/apprentice/induction')
+}
+
+const completeAssessment = async (answers: UserAnswer) => {
+  await axios.patch('/api/apprentice/assessment', {
+    answers: {
+      ...answers
+    }
+  })
 }
 
 const useFetchApprenticeDetails = () => {
@@ -31,11 +40,17 @@ const useFetchApprenticeDetails = () => {
     }
   })
 
-  //   const mutationAssessment = useMutation(postAssessment, {
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries(['apprenticeDetails', apprenticeId])
-  //     }
-  //   })
+  const mutationAssessment = useMutation({
+    mutationFn: completeAssessment,
+    onSuccess: () => {
+      toast.success('You completed your assessment!')
+      queryClient.invalidateQueries({ queryKey: ['apprenticeDetails'] })
+    },
+    onError: () => {
+      toast.success('You must score 100% to complete the assessment.\nPlease, review your incorrect answers, reset the form and submit again.')
+    }
+  })
+
   useEffect(() => {
     if (query.error) {
       toast.error('Failed to fetch apprentice details')
@@ -43,7 +58,8 @@ const useFetchApprenticeDetails = () => {
   }, [query.error])
   return {
     query,
-    mutationInduction
+    mutationInduction,
+    mutationAssessment
   }
 }
 

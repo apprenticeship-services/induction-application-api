@@ -7,6 +7,7 @@ import { ApprenticeRoute } from './ApprenticeRoute'
 import Apprentices from './Apprentices'
 import Admins from './Admins'
 import { Induction } from '@/pages/apprentices/Induction'
+import { Assessment } from '@/pages/apprentices/Assessment'
 // TODO: Redirect user to Dashboard if logged in already
 
 const routes: RouteObject[] = [
@@ -50,7 +51,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'assessment',
-            element: <div>assessment</div>
+            element: <Assessment/>
           }
 
         ]
