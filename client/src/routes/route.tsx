@@ -6,6 +6,7 @@ import { AdminRoute } from './AdminRoute'
 import { ApprenticeRoute } from './ApprenticeRoute'
 import Apprentices from './Apprentices'
 import Admins from './Admins'
+import { Induction } from '@/pages/apprentices/Induction'
 // TODO: Redirect user to Dashboard if logged in already
 
 const routes: RouteObject[] = [
@@ -45,27 +46,14 @@ const routes: RouteObject[] = [
         children: [
           {
             path: 'induction',
-            // loader: apprenticesLoader,
-            element: <div>induction</div>
+            element: <Induction/>
+          },
+          {
+            path: 'assessment',
+            element: <div>assessment</div>
           }
 
         ]
-        // children: [
-        //   {
-        //     path: 'induction',
-        //     element: <Induction />,
-        //     children: [
-        //       {
-        //         path: '',
-        //         element: <Introduction />
-        //       },
-        //       {
-        //         path: 'assessment',
-        //         element: <Assessment />
-        //       }
-        //     ]
-        //   }
-        // ]
       }
     ]
   },
