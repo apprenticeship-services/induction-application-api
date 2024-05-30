@@ -4,6 +4,8 @@ import { Login } from '@/pages/login/Login'
 import { ProtectedRoute } from './ProtectedRoute'
 import { AdminRoute } from './AdminRoute'
 import { ApprenticeRoute } from './ApprenticeRoute'
+import Apprentices from './Apprentices'
+import Admins from './Admins'
 // TODO: Redirect user to Dashboard if logged in already
 
 const routes: RouteObject[] = [
@@ -28,17 +30,14 @@ const routes: RouteObject[] = [
           {
             path: 'apprentices',
             // loader: apprenticesLoader,
-            element: <div>apprentices table</div>
+            element: <Apprentices />
+          },
+          {
+            path: 'admins',
+            // loader: adminsLoader,
+            element: <Admins/>
           }
-
         ]
-        //   {
-        //     path: 'admins',
-        //     // loader: adminsLoader,
-        //     element: <Admins />
-        //   },
-        //   {
-        // ]
       },
       {
         path: '',

@@ -80,3 +80,12 @@
       @apply bg-background text-foreground;
     }
   }
+
+  .dashboard-page-render {
+    height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
+  }
+
+  html{
+    overflow: hidden;
+  }

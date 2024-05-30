@@ -17,8 +17,8 @@ export const useLogin = () => {
   const queryClient = useQueryClient()
   return useMutation<AuthModel, Error, LoginModel>({
     mutationFn: login,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apprentices'] })
+    onSuccess: (data) => {
+      queryClient.setQueryData(['auth'], data)
     }
   })
 }

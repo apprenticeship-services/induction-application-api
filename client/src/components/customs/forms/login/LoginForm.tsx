@@ -37,8 +37,7 @@ export default function LoginForm () {
     })
     toast.promise(promise, {
       loading: 'Checking your credentials...',
-      success: (data) => {
-        console.log(data)
+      success: () => {
         form.reset()
         navigate('/apprentices')
         return 'You are logged in!'
@@ -47,7 +46,6 @@ export default function LoginForm () {
         return 'Invalid Username or Password'
       }
     })
-    console.log(promise)
   }
   return (
     <Card className="mx-auto max-w-sm">
