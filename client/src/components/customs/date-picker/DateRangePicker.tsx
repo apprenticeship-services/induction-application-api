@@ -37,7 +37,9 @@ export function DatePickerWithRange ({
       return
     }
     const startDate = `${date.from.getFullYear()}-${date.from.getMonth() + 1}-${date.from.getDate()}`
-    const endDate = `${date?.to.getFullYear()}-${date?.to.getMonth() + 1}-${date?.to.getDate() + 1}`
+    const end = new Date(date.to)
+    end.setDate(end.getDate() + 1)
+    const endDate = `${end.getFullYear()}-${end.getMonth() + 1}-${end.getDate()}`
     refetch({
       startDate,
       endDate

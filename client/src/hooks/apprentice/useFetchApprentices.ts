@@ -18,14 +18,22 @@ const fetchApprentices = async (dates: DateRangeInputs) => {
   return response.data as ApprenticeModel[]
 }
 
+const refreshDate = () => {
+  const start = new Date()
+  const end = new Date(start)
+  end.setDate(start.getMonth() + 1)
+  return {
+    startDate: `${start.getFullYear()}-${start.getMonth()}-${start.getDate()}`,
+    endDate: `${end.getFullYear()}-${end.getMonth() + 1}-${end.getDate() + 1}`
+  }
+}
+
 const useFetchApprentices = (): [
     UseQueryResult<ApprenticeModel[], Error>,
     (dates: DateRangeInputs) => void
   ] => {
-  const [dateRange, setDateRange] = useState<DateRangeInputs | null>({
-    startDate: `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`,
-    endDate: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate() + 1}`
-  })
+  const [dateRange, setDateRange] = useState<DateRangeInputs | null>(refreshDate())
+  console.log(dateRange)
 
   const query = useQuery<ApprenticeModel[], Error>({
     queryKey: ['apprentices', dateRange],

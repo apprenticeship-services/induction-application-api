@@ -12,6 +12,7 @@ const reconnect = async (): Promise<AuthModel> => {
 export const useReconnect = () => {
   return useQuery<AuthModel, Error>({
     queryKey: ['auth'],
-    queryFn: reconnect
+    queryFn: reconnect,
+    staleTime: Infinity
   })
 }

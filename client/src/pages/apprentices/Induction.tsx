@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Video } from '@/components/video/Video'
+import Video from '@/components/video/Video'
 import useFetchApprenticeDetails from '@/hooks/apprentice/useFetchApprenticeDetails'
 import { LockKeyhole } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
