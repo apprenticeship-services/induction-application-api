@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { AxiosError } from 'axios'
 import useFetchApprenticeDetails from '@/hooks/apprentice/useFetchApprenticeDetails'
 import { UserAnswer } from './types/UserAnswer'
+import useLocalStorage from '@/hooks/local_storage/useLocalStorage'
 
 const questionnaireSchema = z.object({
   answers: z.object({
@@ -51,15 +52,17 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
       tip: 'Review video at 14:00'
     }
   })
+  const [savedQuestions, updateSavedQuestions] = useLocalStorage<UserAnswer>('questions', {})
+  const [submitted, updateSubmission] = useLocalStorage<boolean>('questionnaire-submitted', false)
 
   const [userAnswers, setUserAnswers] = useState<UserAnswer>({
-    question1: query?.data?.assessment ? 'a' : null,
-    question2: query?.data?.assessment ? 'b' : null,
-    question3: query?.data?.assessment ? 'c' : null,
-    question4: query?.data?.assessment ? 'd' : null,
-    question5: query?.data?.assessment ? 'a' : null
+    question1: query?.data?.assessment ? 'a' : savedQuestions.question1,
+    question2: query?.data?.assessment ? 'b' : savedQuestions.question2,
+    question3: query?.data?.assessment ? 'c' : savedQuestions.question3,
+    question4: query?.data?.assessment ? 'd' : savedQuestions.question4,
+    question5: query?.data?.assessment ? 'a' : savedQuestions.question5
   })
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(submitted ?? false)
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -78,6 +81,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
       toast.error(e.response?.data as string)
     } finally {
       setIsSubmitted(true)
+      updateSubmission(true)
     }
   }
 
@@ -86,6 +90,10 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
       ...prev,
       [`question${id}`]: e.target.value
     }))
+    updateSavedQuestions({
+      ...userAnswers,
+      [`question${id}`]: e.target.value
+    })
   }
 
   const reset = () => {
@@ -97,6 +105,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
       5: null
     })
     setIsSubmitted(false)
+    updateSubmission(false)
     resetForm()
   }
 
@@ -192,6 +201,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
             type="button"
             className="px-4 sm:px-8 py-2 sm:py-3 font-bold text-sm sm:text-base  text-black  rounded-sm hover:bg-slate-400 transition focus:outline-none focus:shadow-outline active:scale-[0.98]"
             onClick={reset}
+            disabled={query?.data?.assessment}
           >
             RESET
           </button>
