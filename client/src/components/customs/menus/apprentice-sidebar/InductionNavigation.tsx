@@ -1,6 +1,6 @@
 import useFetchApprenticeDetails from '@/hooks/apprentice/useFetchApprenticeDetails'
-import { LockKeyhole, MenuIcon, SquareCheckBig } from 'lucide-react'
-import { useState } from 'react'
+import { LockKeyhole, SquareCheckBig } from 'lucide-react'
+// import { useState } from 'react' MenuIcon,
 import { Link, useLocation } from 'react-router-dom'
 
 const InductionNavigation = () => {

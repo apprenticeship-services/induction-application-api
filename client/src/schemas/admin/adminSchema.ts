@@ -6,12 +6,16 @@ export const adminSchema = z.object({
     .string()
     .min(1, { message: 'Email is required.' })
     .email({ message: 'Email must be valid.' }),
-  option: z.literal(true, {
-    errorMap: () => ({
-      message: 'You must check the checkbox to register new admin.'
-    })
+  option: z.boolean().refine(val => val === true, {
+    message: 'You must check the checkbox to register new admin.'
   })
 })
 
 export type AdminRegistrationModel = z.infer<typeof adminSchema>
-export type AdminModel = Omit<z.infer<typeof adminSchema>, 'option'>
+export type AdminModel = {
+  name: string;
+  email: string;
+  accountId:string,
+  role: string,
+  createdAt:string
+}

@@ -3,15 +3,16 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ColumnDef } from '@tanstack/react-table'
-import { AdminModel } from '@/schemas/admin/adminSchema'
+import { AdminInformation } from './AdminInformation'
+import { DeletionDialog } from '../../modals/DeletionDialog'
+import { useQueryClient } from '@tanstack/react-query'
+import { AuthModel } from '@/schemas/types/AccountModel'
 
-export const columns: ColumnDef<AdminModel>[] = [
+export const columns = [
   {
     accessorKey: 'name',
     header: 'Name'
@@ -47,8 +48,10 @@ export const columns: ColumnDef<AdminModel>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
-      const apprentice = row.original
-      return (
+      const queryClient = useQueryClient()
+      const auth = queryClient.getQueryData(['auth']) as AuthModel
+      const admin = row.original
+      return auth?.email !== admin?.email && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -59,16 +62,8 @@ export const columns: ColumnDef<AdminModel>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel >Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => console.log(apprentice)}
-            >View apprentice
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer"
-            onClick={() => console.log(apprentice)}
-            >Delete
-            </DropdownMenuItem>
+            <AdminInformation admin={admin} />
+            <DeletionDialog accountId={admin.accountId} role='admin'/>
           </DropdownMenuContent>
         </DropdownMenu>
       )

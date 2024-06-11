@@ -20,8 +20,12 @@ export const useDeleteAccount = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: deleteAccount,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['apprentices'] })
+    onSuccess: (_, vars) => {
+      if (vars.role === 'admin') {
+        queryClient.invalidateQueries({ queryKey: ['admins'] })
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['apprentices'] })
+      }
     }
   })
 }

@@ -29,3 +29,14 @@ services:
       - "9222:9222"
     links: 
       - mongo
+
+  client:
+    container_name: client-container
+    build:
+      context: ./
+      dockerfile: client.dockerfile
+    volumes:
+      - ./client/src/:/usr/workspace/cetb-client/src/
+    ports:
+      - "8080:8080"
+

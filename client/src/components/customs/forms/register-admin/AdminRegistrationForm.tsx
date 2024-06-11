@@ -24,7 +24,7 @@ export function AdminRegistrationForm () {
     defaultValues: {
       name: '',
       email: '',
-      option: undefined
+      option: false
     }
   })
 

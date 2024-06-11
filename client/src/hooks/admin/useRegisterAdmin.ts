@@ -3,9 +3,8 @@ import {
   useQueryClient
 } from '@tanstack/react-query'
 import axios from '@/api/axios/axios'
-import { AdminModel } from '@/schemas/admin/adminSchema'
 
-const registerAdmin = async (adminData: AdminModel): Promise<void> => {
+const registerAdmin = async (adminData: {name:string, email:string}): Promise<void> => {
   await axios.post('/api/admins',
     adminData
   )
