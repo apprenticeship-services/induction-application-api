@@ -3,13 +3,14 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
 import { ApprenticeModel } from '@/schemas/types/ApprenticeModel'
+import { ApprenticeInformation } from './ApprenticeInformation'
+import { DeletionDialog } from '../../modals/DeletionDialog'
 
 export const columns: ColumnDef<ApprenticeModel>[] = [
   {
@@ -77,16 +78,8 @@ export const columns: ColumnDef<ApprenticeModel>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel >Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => console.log(apprentice)}
-            >View apprentice
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer"
-            onClick={() => console.log(apprentice)}
-            >Delete
-            </DropdownMenuItem>
+              <ApprenticeInformation apprentice={apprentice}/>
+            <DeletionDialog accountId={apprentice.accountId} role='apprentice'/>
           </DropdownMenuContent>
         </DropdownMenu>
       )

@@ -1,7 +1,7 @@
 import { DataTable } from '../main/DataTable'
 import { columns } from './columns'
 import { AdminRegistrationModal } from '../../modals/AdminRegistrationModal'
-import useFetchAdmins from '@/hooks/admin/useFetchApprentices'
+import useFetchAdmins from '@/hooks/admin/useFetchAdmins'
 
 export const AdminsTable = () => {
   const { query } = useFetchAdmins()

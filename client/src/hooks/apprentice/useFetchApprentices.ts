@@ -20,8 +20,7 @@ const fetchApprentices = async (dates: DateRangeInputs) => {
 
 const refreshDate = () => {
   const start = new Date()
-  const end = new Date(start)
-  end.setDate(start.getMonth() + 1)
+  const end = new Date()
   return {
     startDate: `${start.getFullYear()}-${start.getMonth()}-${start.getDate()}`,
     endDate: `${end.getFullYear()}-${end.getMonth() + 1}-${end.getDate() + 1}`
@@ -48,7 +47,8 @@ const useFetchApprentices = (): [
   })
 
   const updateDateRange = (dates: DateRangeInputs) => {
-    console.log(dates)
+    if (dates.startDate === dateRange?.startDate &&
+      dates.endDate === dateRange?.endDate) return
     setDateRange(dates)
   }
 
