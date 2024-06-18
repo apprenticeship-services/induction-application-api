@@ -2,7 +2,7 @@ import axios from '@/api/axios/axios'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type DeletionData = {
-  accountId: string
+  accountId?: string
   role: 'admin' | 'apprentice'
 }
 

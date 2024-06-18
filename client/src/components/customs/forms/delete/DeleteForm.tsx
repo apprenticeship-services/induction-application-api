@@ -17,7 +17,7 @@ import { deleteAccountSchema, DeleteAccountModel } from '@/schemas/account/delet
 import { useDeleteAccount } from '@/hooks/account/useDeleteAccount'
 
 type DeleteAccountProps = {
-    accountId: string,
+    accountId?: string,
     role: 'admin' | 'apprentice',
     changeDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -44,7 +44,7 @@ export function DeleteForm ({ accountId, role, changeDialogOpen }: DeleteAccount
       },
       error: (error) => {
         if (error.response && error.response.data && error.response.data.error) {
-          return error.response.data.error
+          return error.response.data.errordock
         }
         return 'Error while deleting account'
       }

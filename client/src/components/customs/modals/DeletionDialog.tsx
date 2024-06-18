@@ -11,7 +11,7 @@ import { DeleteForm } from '@/components/customs/forms/delete/DeleteForm'
 import { useState } from 'react'
 
   type DeletionDialogProps = {
-      accountId: string,
+      accountId?: string,
       role:'admin' | 'apprentice'
   }
 

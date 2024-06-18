@@ -3,7 +3,7 @@ export type ApprenticeModel = {
     email: string;
     role: string;
     createdAt: Date;
-    accountId: string;
+    accountId?: string;
     trade: string;
     advisor: string;
     induction: boolean;

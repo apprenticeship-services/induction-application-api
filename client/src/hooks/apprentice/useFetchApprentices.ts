@@ -29,7 +29,8 @@ const refreshDate = () => {
 
 const useFetchApprentices = (): [
     UseQueryResult<ApprenticeModel[], Error>,
-    (dates: DateRangeInputs) => void
+  (dates: DateRangeInputs) => void,
+    dateRange: DateRangeInputs | null
   ] => {
   const [dateRange, setDateRange] = useState<DateRangeInputs | null>(refreshDate())
 
@@ -51,7 +52,7 @@ const useFetchApprentices = (): [
     setDateRange(dates)
   }
 
-  return [query, updateDateRange]
+  return [query, updateDateRange, dateRange]
 }
 
 export default useFetchApprentices
