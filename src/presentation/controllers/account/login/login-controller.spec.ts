@@ -1,21 +1,20 @@
-import { Validator } from '@/presentation/protocols/validator'
 import { LoginController } from './login-controller'
-import { HeaderType, HttpRequest } from '@/presentation/protocols'
-import { ValidatorComposite } from '@/validator/validators/validation-composite'
-import { MissingParamError } from '@/presentation/errors/missing-param'
+import { HttpRequest, HeaderType } from '@/presentation/protocols'
+import { Validator } from '@/presentation/protocols/validator'
 import { badRequest, serverError, success, unauthorized } from '@/presentation/helpers/http-helper'
 import { Authentication, AuthenticationParams } from '@/domain/use-cases/authentication'
 import { UserCredentials } from '@/domain/models/user-credentials'
+import { MissingParamError } from '@/presentation/errors/missing-param'
 import env from '@/main/config/env'
 
 type Sut = {
-    sut: LoginController
-    validatorStub: Validator
-    authenticationStub: Authentication
-}
+  sut: LoginController;
+  validatorStub: Validator;
+  authenticationStub: Authentication;
+};
 
 const makeSut = (): Sut => {
-  const validatorStub = new ValidatorComposite([makeValidatorStub()])
+  const validatorStub = makeValidatorStub()
   const authenticationStub = makeAuthenticationStub()
   const sut = new LoginController(validatorStub, authenticationStub)
   return {
@@ -62,19 +61,30 @@ const fakeUserCredentials = (): UserCredentials => ({
   accessToken: 'any_token'
 })
 
-const fakeTokenHeader = (): HeaderType => ({
+const fakeTokenHeader = (envMode: string): HeaderType => ({
   token: {
     type: 'cookie',
     value: 'any_token',
     options: {
       httpOnly: true,
-      secure: true,
-      sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
+      secure: envMode === 'production',
+      sameSite: envMode === 'development' ? 'lax' : 'strict'
     }
   }
 })
 
-describe('Login Controller', () => {
+describe('LoginController', () => {
+  let originalEnv: string
+
+  beforeAll(() => {
+    originalEnv = env.nodeEnvironment
+  })
+
+  afterEach(() => {
+    env.nodeEnvironment = originalEnv
+    jest.clearAllMocks()
+  })
+
   test('Should call Validator with correct values', async () => {
     const { sut, validatorStub } = makeSut()
     const validatorSpy = jest.spyOn(validatorStub, 'validate')
@@ -117,11 +127,21 @@ describe('Login Controller', () => {
     expect(response).toEqual(unauthorized())
   })
 
-  test('Should return 200 and return token on header on success', async () => {
+  test('Should return 200 and return token on header on success with sameSite lax in development', async () => {
+    env.nodeEnvironment = 'development'
     const { sut } = makeSut()
     const response = await sut.handle(fakeRequest())
     const userCredentials = fakeUserCredentials()
     delete userCredentials.accessToken
-    expect(response).toEqual(success(userCredentials, fakeTokenHeader()))
+    expect(response).toEqual(success(userCredentials, fakeTokenHeader('development')))
+  })
+
+  test('Should return 200 and return token on header on success with sameSite strict in production', async () => {
+    env.nodeEnvironment = 'production'
+    const { sut } = makeSut()
+    const response = await sut.handle(fakeRequest())
+    const userCredentials = fakeUserCredentials()
+    delete userCredentials.accessToken
+    expect(response).toEqual(success(userCredentials, fakeTokenHeader('production')))
   })
 })

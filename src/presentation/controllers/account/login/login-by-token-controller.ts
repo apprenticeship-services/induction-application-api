@@ -25,8 +25,8 @@ export class LoginByTokenController implements Controller {
             value: null,
             options: {
               httpOnly: true,
-              secure: true,
-              sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
+              secure: env.nodeEnvironment === 'production',
+              sameSite: env.nodeEnvironment === 'development' ? 'lax' : 'strict'
             }
           }
         }

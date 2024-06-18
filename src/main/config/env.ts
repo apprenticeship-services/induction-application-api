@@ -1,5 +1,6 @@
 export default {
   nodeEnvironment: process.env.NODE_ENV || 'development',
+  urlSite: process.env.URL_SITE || 'http://localhost:8080',
   mongoUri: process.env.MONGO_URL || 'mongodb://localhost:27017/cetb-node-api',
   port: process.env.PORT || 4000,
   salt: Number(process.env.SALT) || 12,

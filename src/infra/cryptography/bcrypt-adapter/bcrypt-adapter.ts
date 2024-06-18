@@ -1,5 +1,5 @@
 import { Hasher } from '@/data/protocols/cryptography/hasher'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import env from '@/main/config/env'
 import { HashComparer } from '@/data/protocols/cryptography/hash-comparer'
 

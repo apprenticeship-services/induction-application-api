@@ -30,8 +30,8 @@ export class LoginController implements Controller {
           value: accessToken,
           options: {
             httpOnly: true,
-            secure: true,
-            sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
+            secure: env.nodeEnvironment === 'production',
+            sameSite: env.nodeEnvironment === 'development' ? 'lax' : 'strict'
           }
         }
       }

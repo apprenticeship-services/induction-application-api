@@ -46,4 +46,15 @@ describe('DateParamValidator', () => {
     const undefinedValue = undefined
     expect(validator.isValid(undefinedValue)).toBe(false)
   })
+
+  test('should return false if an error is thrown', () => {
+    jest.spyOn(Date.prototype, 'getTime').mockImplementationOnce(() => {
+      throw new Error()
+    })
+
+    const validator = new DateParamValidatorAdapter()
+    const result = validator.isValid('invalid date string')
+
+    expect(result).toBe(false)
+  })
 })

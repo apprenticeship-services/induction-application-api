@@ -1,9 +1,9 @@
 import { BcryptAdapter } from './bcrypt-adapter'
-import bcrypt, { compare } from 'bcrypt'
+import bcrypt, { compare } from 'bcryptjs'
 
 const salt = 12
 
-jest.mock('bcrypt', () => ({
+jest.mock('bcryptjs', () => ({
   async hash (): Promise<string> {
     return Promise.resolve('hashed_value')
   },

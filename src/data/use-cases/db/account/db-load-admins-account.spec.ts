@@ -23,8 +23,8 @@ describe('DbLoadAdminsAccount', () => {
 
   test('should return a list of admins on success', async () => {
     const admins: AdminAccount[] = [
-      { name: 'Admin 1', email: 'admin1@example.com', role: 'admin', createdAt: '2024-01-01' },
-      { name: 'Admin 2', email: 'admin2@example.com', role: 'admin', createdAt: '2024-01-02' }
+      { name: 'Admin 1', accountId: '1', email: 'admin1@example.com', role: 'admin', createdAt: '2024-01-01' },
+      { name: 'Admin 2', accountId: '2', email: 'admin2@example.com', role: 'admin', createdAt: '2024-01-02' }
     ]
     jest.spyOn(loadAdminsRepositoryStub, 'loadAdmins').mockResolvedValue(admins)
 

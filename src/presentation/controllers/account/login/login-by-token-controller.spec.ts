@@ -41,19 +41,30 @@ const fakeRequest = (): HttpRequest => ({
   reconnectToken: 'any_token'
 })
 
+const envMode = env.nodeEnvironment
+
 const fakeTokenHeader = {
   token: {
     type: 'clearCookie',
     value: null,
     options: {
       httpOnly: true,
-      secure: true,
-      sameSite: env.nodeEnvironment === 'development' ? 'none' : 'strict'
+      secure: envMode === 'production',
+      sameSite: envMode === 'development' ? 'lax' : 'strict'
     }
   }
 }
-
 describe('LoginByTokenController', () => {
+  let originalEnv: string
+
+  beforeAll(() => {
+    originalEnv = env.nodeEnvironment
+  })
+
+  afterEach(() => {
+    env.nodeEnvironment = originalEnv
+    jest.clearAllMocks()
+  })
   test('Should call LoadAccountByToken with correct values while reconnecting ', async () => {
     const { sut, loadAccountByTokenStub } = makeSut()
     const loadSpy = jest.spyOn(loadAccountByTokenStub, 'loadByToken')
@@ -71,7 +82,19 @@ describe('LoginByTokenController', () => {
     const { sut, loadAccountByTokenStub } = makeSut()
     jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockReturnValueOnce(Promise.resolve(null))
     const response = await sut.handle(fakeRequest())
-    expect(response).toEqual(forbidden(new AccessDeniedError(), fakeTokenHeader))
+
+    const expectedTokenHeader = {
+      token: {
+        type: 'clearCookie',
+        value: null,
+        options: {
+          httpOnly: true,
+          secure: env.nodeEnvironment === 'production',
+          sameSite: env.nodeEnvironment === 'development' ? 'lax' : 'strict'
+        }
+      }
+    }
+    expect(response).toEqual(forbidden(new AccessDeniedError(), expectedTokenHeader))
   })
 
   test('Should return 500 if LoadAccountByToken throws', async () => {
@@ -89,5 +112,44 @@ describe('LoginByTokenController', () => {
       email: fakeAccountModel().email,
       role: fakeAccountModel().role
     }))
+  })
+
+  test('Should return sameSite lax on development', async () => {
+    env.nodeEnvironment = 'development'
+    const { sut, loadAccountByTokenStub } = makeSut()
+    jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+
+    const expectedTokenHeader = {
+      token: {
+        type: 'clearCookie',
+        value: null,
+        options: {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax'
+        }
+      }
+    }
+    expect(response).toEqual(forbidden(new AccessDeniedError(), expectedTokenHeader))
+  })
+  test('Should return sameSite strict on production', async () => {
+    env.nodeEnvironment = 'production'
+    const { sut, loadAccountByTokenStub } = makeSut()
+    jest.spyOn(loadAccountByTokenStub, 'loadByToken').mockReturnValueOnce(Promise.resolve(null))
+    const response = await sut.handle(fakeRequest())
+
+    const expectedTokenHeader = {
+      token: {
+        type: 'clearCookie',
+        value: null,
+        options: {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict'
+        }
+      }
+    }
+    expect(response).toEqual(forbidden(new AccessDeniedError(), expectedTokenHeader))
   })
 })
