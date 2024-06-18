@@ -13,6 +13,7 @@ const Video = () => {
   const [previousTime, setPreviousTime] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState<number>(0)
+  const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true)
 
   const [savedTime, setSavedTime] = useLocalStorage<number>('video-current-time', 0)
 
@@ -20,12 +21,14 @@ const Video = () => {
     const handleLoadedMetadata = () => {
       if (playerRef.current) {
         setDuration(playerRef.current.duration)
+        playerRef.current!.pause()
         if (!query?.data?.induction) {
           const resumeTime = savedTime
           playerRef.current.currentTime = resumeTime
           setCurrentTime(resumeTime)
           setPreviousTime(resumeTime)
         }
+        setIsVideoLoading(false)
       }
     }
     const videoElement = playerRef.current
@@ -45,7 +48,7 @@ const Video = () => {
       return
     }
 
-    if (Math.ceil(duration - previousTime) <= 59) {
+    if (!isVideoLoading && Math.ceil(duration - previousTime) <= 59) {
       if (!query?.data?.induction) {
         mutationInduction.mutate()
       }
@@ -76,14 +79,16 @@ const Video = () => {
 
   const handleFastForward = () => {
     if (playerRef.current) {
-      const newTime = Math.min(currentTime + 60)
+      const newTime = Math.min(currentTime + 10, previousTime)
       playerRef.current!.currentTime = newTime
     }
   }
 
   return (
     <div className="w-full border-1">
-          <video
+      <video
+        autoPlay={true}
+          playsInline={true}
           controls={query?.data?.induction}
           ref={playerRef}
           onTimeUpdate={handleTimeUpdate}
@@ -100,9 +105,9 @@ const Video = () => {
             </div>
           </div>
               <div className="w-full flex justify-between py-2 px-6">
-            <Button onClick={handleRewind} className='flex gap-2'><Rewind /> 10s</Button>
-            <Button onClick={handlePlayPause}>{playing ? <CirclePause /> : <Play />}</Button>
-            <Button onClick={handleFastForward} className='flex gap-2'> 10s <FastForward /></Button>
+            <Button size={'sm'} onClick={handleRewind} disabled={isVideoLoading} className='flex gap-2 text-xs'><Rewind /> 10s</Button>
+            <Button size={'sm'} onClick={handlePlayPause} disabled={isVideoLoading} >{playing ? <CirclePause /> : <Play />}</Button>
+            <Button size={'sm'} onClick={handleFastForward} disabled={isVideoLoading} className='flex gap-2 text-xs'> 10s <FastForward /></Button>
           </div>
         </>
       )}

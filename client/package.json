@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -20,7 +20,7 @@
     "@radix-ui/react-progress": "^1.0.3",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
-    "@tanstack/react-query": "^5.40.0",
+    "@tanstack/react-query": "^5.45.0",
     "@tanstack/react-query-devtools": "^5.40.0",
     "@tanstack/react-table": "^8.17.3",
     "axios": "^1.7.2",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
-    "@types/react": "^18.2.66",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",

@@ -13,7 +13,7 @@ const ApprenticeDashboard = ({ children }: DashboardProps) => {
 
   return (
     <div className="flex overflow-hidden">
-       <InductionNavigation />
+      <InductionNavigation />
       <div className="w-full h-[100vh]">
         <Header />
         <main

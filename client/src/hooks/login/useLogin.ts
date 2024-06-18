@@ -18,6 +18,9 @@ export const useLogin = () => {
   return useMutation<AuthModel, Error, LoginModel>({
     mutationFn: login,
     onSuccess: (data) => {
+      queryClient.setQueryDefaults(['auth'], {
+        staleTime: Infinity
+      })
       queryClient.setQueryData(['auth'], data)
     }
   })

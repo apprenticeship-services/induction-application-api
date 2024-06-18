@@ -11,8 +11,8 @@ import { toast } from 'sonner'
 const Header = () => {
   const { mutateAsync } = useLogout()
   const navigate = useNavigate()
-  const user = useQueryClient().getQueryData<AuthModel>(['auth'])
-  // const navigate = useNavigate()
+  const user = useQueryClient().getQueryData<AuthModel>(['auth'])?.name.split(' ')
+  const username = `${user?.[0]} ${user?.length !== undefined && user?.length > 1 ? user?.[user.length - 1] : ''}`
 
   const handleLogout = () => {
     const promise = mutateAsync()
@@ -35,12 +35,11 @@ const Header = () => {
           <div className="flex flex-1 items-center">
             <div className="flex justify-between items-center w-full px-2 ">
               <p className="text-sm sm:text-base text-white hover:text-white rounded-md  mx-10 p-2 font-medium">
-                {/* ADD USER NAME AFTER LOGIN */}
-                {user?.name}
+                {username}
               </p>
               <Button
                 variant={'secondary'}
-                className='hidden sm:flex items-center gap-1 '
+                className='flex items-center gap-1 '
                 onClick={handleLogout}
               >
                 <LogOut size={20}/> Logout

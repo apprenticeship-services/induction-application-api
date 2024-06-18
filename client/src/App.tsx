@@ -5,6 +5,11 @@ import router from './routes/route'
 import { Toaster, toast } from 'sonner'
 
 const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: Infinity
+    }
+  },
   queryCache: new QueryCache({
     onError: (_error, query) => {
       if (query?.meta?.errorMessage) {

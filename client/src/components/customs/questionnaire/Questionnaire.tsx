@@ -62,8 +62,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
     question4: query?.data?.assessment ? 'd' : savedQuestions.question4,
     question5: query?.data?.assessment ? 'a' : savedQuestions.question5
   })
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(submitted ?? false)
-
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(JSON.parse(submitted))
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
