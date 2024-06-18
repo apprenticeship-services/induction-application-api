@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/main/server.js",
-    "build": "rimraf dist && tsc -p tsconfig-build.json",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run build",
+    "build": "npm run build-client && npm run build-server",
+    "build-server": "echo 'Building server...' && rimraf dist && tsc -p tsconfig-build.json",
+    "build-client": "echo 'Building client...' && cd client && npm install && npm run build",
     "dev": "nodemon dist/main/server.js",
     "debug": "nodemon -L --watch ./dist --inspect=0.0.0.0:9222 --nolazy ./dist/main/server.js",
     "up": "npm run build && docker compose up -d",
@@ -24,7 +27,7 @@
   "devDependencies": {
     "@eslint/js": "^9.2.0",
     "@shelf/jest-mongodb": "^4.3.2",
-    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
@@ -49,10 +52,11 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "email-validator": "^2.0.4",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
     "mongodb": "^6.6.1",
