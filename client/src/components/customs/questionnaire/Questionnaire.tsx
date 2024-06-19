@@ -62,25 +62,36 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
     question4: query?.data?.assessment ? 'd' : savedQuestions.question4,
     question5: query?.data?.assessment ? 'a' : savedQuestions.question5
   })
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(JSON.parse(submitted))
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    updateSubmission(true)
     try {
       const result = checkAnswer()
       if (result === 5) {
         if (query?.data?.assessment) {
           return
         }
-        mutationAssessment.mutate(userAnswers)
+        const promise = mutationAssessment.mutateAsync(userAnswers)
+        toast.promise(promise, {
+          loading: 'Submitting assessment...',
+          success: () => {
+            return 'You completed your assessment!'
+          },
+          error: (error) => {
+            updateSubmission(false)
+            if (error.response && error.response.data && error.response.data.error) {
+              return error.response.data.error
+            }
+            return 'Error while submitting your assessment. Please try again later!'
+          }
+        })
       } else {
         toast.error('You must score 100% to complete the assessment.\nPlease, review your incorrect answers, reset the form and submit again.')
       }
     } catch (error) {
       const e = error as AxiosError
       toast.error(e.response?.data as string)
-    } finally {
-      setIsSubmitted(true)
-      updateSubmission(true)
+      updateSubmission(false)
     }
   }
 
@@ -103,7 +114,6 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
       4: null,
       5: null
     })
-    setIsSubmitted(false)
     updateSubmission(false)
     resetForm()
   }
@@ -130,8 +140,8 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
                 {index + 1}. {question.question}
               </h2>
               <div className="px-4 flex flex-col gap-2">
-                <div className={`${(isSubmitted || query?.data?.assessment) ? 'block' : 'invisible py-2'}`}>
-                  {(isSubmitted || query?.data?.assessment) && (
+                <div className={`${(submitted || query?.data?.assessment) ? 'block' : 'invisible py-2'}`}>
+                  {(submitted || query?.data?.assessment) && (
                     <>
                       {userAnswers[`question${index + 1}`] ===
                       correctAnswers[`question${index + 1}`].value
@@ -156,16 +166,16 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
                     <span>{key}. </span>
                     <label
                       className={`${
-                        (!isSubmitted || !query?.data?.assessment) && 'cursor-pointer'
+                        (!submitted || !query?.data?.assessment) && 'cursor-pointer'
                       } text-sm sm:text-base`}
                     >
                       <input
-                        disabled={(isSubmitted || query?.data?.assessment) }
+                        disabled={(submitted || query?.data?.assessment) }
                         name={(index + 1).toString()}
                         type="radio"
                         value={key}
                         checked={key === userAnswers[`question${index + 1}`]}
-                        className={`${(!isSubmitted || !query?.data?.assessment) && 'cursor-pointer'} `}
+                        className={`${(!submitted || !query?.data?.assessment) && 'cursor-pointer'} `}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           onChange(index + 1, e)
                         }
@@ -178,7 +188,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
             </div>
           ))}
 
-          <p className={`font-bold ${isSubmitted ? 'block' : 'block'}`}>
+          <p className={`font-bold ${submitted ? 'block' : 'block'}`}>
             Your score: {countScore}/{Object.entries(correctAnswers).length} (
             {(countScore * 100) / Object.entries(correctAnswers).length}%)
           </p>
@@ -187,12 +197,12 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
         <div className="flex gap-2 justify-center items-center">
           <button
             className={`px-4 sm:px-8 py-2 sm:py-3 font-bold text-sm sm:text-base ${
-                (isSubmitted || query?.data?.assessment)
+                (submitted || query?.data?.assessment)
                 ? 'bg-slate-400 text-white'
                 : 'text-white bg-foreground rounded-sm hover:bg-slate-700 active:scale-[0.98]'
             } focus:outline-none focus:shadow-outline transition`}
             type="submit"
-            disabled={(isSubmitted || query?.data?.assessment)}
+            disabled={(submitted || query?.data?.assessment)}
           >
             SUBMIT
           </button>

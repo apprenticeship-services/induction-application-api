@@ -7,7 +7,8 @@ import { Toaster, toast } from 'sonner'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: Infinity
+      gcTime: Infinity,
+      refetchOnWindowFocus: 'always'
     }
   },
   queryCache: new QueryCache({

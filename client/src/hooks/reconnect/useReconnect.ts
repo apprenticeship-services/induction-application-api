@@ -13,6 +13,7 @@ export const useReconnect = () => {
   return useQuery<AuthModel, Error>({
     queryKey: ['auth'],
     queryFn: reconnect,
-    staleTime: Infinity
+    refetchOnWindowFocus: 'always',
+    refetchInterval: 1000 * 60 * 60
   })
 }

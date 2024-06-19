@@ -1,8 +1,7 @@
-import { AuthModel } from '@/schemas/types/AccountModel'
-import { useQueryClient } from '@tanstack/react-query'
+import { useReconnect } from '@/hooks/reconnect/useReconnect'
 import { Navigate, Outlet } from 'react-router-dom'
 
 export const ProtectedRoute = () => {
-  const user = useQueryClient().getQueryData<AuthModel>(['auth'])
+  const { data: user } = useReconnect()
   return <>{user?.email ? <Outlet /> : <Navigate to={'/'} replace />}</>
 }

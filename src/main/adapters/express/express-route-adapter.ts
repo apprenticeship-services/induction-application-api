@@ -15,7 +15,10 @@ export const expressRouteAdapter = (controller: Controller) => {
     if (httpResponse.headers) {
       for (const [key, value] of Object.entries(httpResponse.headers)) {
         if (value.type === 'cookie') {
-          res.cookie(key, value.value, value.options)
+          res.cookie(key, value.value, {
+            ...value.options,
+            maxAge: 1000 * 60 * 60 * 24 * 15
+          })
         }
         if (value.type === 'clearCookie') {
           res.clearCookie(key, value.options)

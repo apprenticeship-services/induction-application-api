@@ -44,7 +44,7 @@ export function DeleteForm ({ accountId, role, changeDialogOpen }: DeleteAccount
       },
       error: (error) => {
         if (error.response && error.response.data && error.response.data.error) {
-          return error.response.data.errordock
+          return error.response.data.error
         }
         return 'Error while deleting account'
       }

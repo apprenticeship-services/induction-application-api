@@ -43,11 +43,7 @@ const useFetchApprenticeDetails = () => {
   const mutationAssessment = useMutation({
     mutationFn: completeAssessment,
     onSuccess: () => {
-      toast.success('You completed your assessment!')
       queryClient.invalidateQueries({ queryKey: ['apprenticeDetails'] })
-    },
-    onError: () => {
-      toast.success('You must score 100% to complete the assessment.\nPlease, review your incorrect answers, reset the form and submit again.')
     }
   })
 
