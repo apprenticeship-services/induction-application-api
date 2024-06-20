@@ -131,7 +131,7 @@ const Questionnaire = ({ resetForm }: QuestionnaireProps) => {
   }
 
   return (
-    <div className='border-b-2 border-solid border-slate-400 rounded-b-lg shadow-lg shadow-slate-500/50'>
+    <div className='border-b-1 border-solid border-slate-500 shadow-lg'>
       <form onSubmit={onSubmit} className="py-4 ">
         <div className="flex flex-col gap-7 px-4 sm:px-9 py-4 sm:py-6 ">
           {dumbData.map((question: Question, index: number) => (

@@ -17,7 +17,7 @@ const InductionNavigation = () => {
       <Button
         variant={'secondary'}
         size={'sm'}
-        className={`${mobileOpen ? 'invisible' : 'visible'} md:invisible  text-3xl absolute z-30 top-5 left-3 rounded px-1  cursor-pointer transition`}
+        className={`${mobileOpen ? 'invisible' : 'visible'} lg:invisible  text-3xl absolute z-30 top-5 left-3 rounded px-1  cursor-pointer transition`}
         onClick={() => setMobileOpen((prev) => !prev)} // toggle isNavOpen state on click
       >
         <MenuIcon />
@@ -88,7 +88,7 @@ const InductionNavigation = () => {
       </div>
 
       {/* Normal Menu */}
-      <div className="hidden md:flex">
+      <div className="hidden lg:flex">
         <aside className="py-8 px-6 border-r-[1px]  border-b-[1px] border-solid bg-black ">
           <h2 className="whitespace-nowrap text-lg text-white">
             INDUCTION PHASES

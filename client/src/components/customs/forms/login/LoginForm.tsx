@@ -48,7 +48,7 @@ export default function LoginForm () {
     })
   }
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto max-w-full">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
         <CardDescription>Enter your email and password to login to your account.</CardDescription>
