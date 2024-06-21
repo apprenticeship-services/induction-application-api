@@ -19,8 +19,6 @@ const queryClient = new QueryClient({
     }
   })
 })
-console.log('apprenticeshipservices.cetb@gmail.com')
-console.log('0462641')
 
 function App () {
   return (
