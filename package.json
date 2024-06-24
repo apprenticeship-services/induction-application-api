@@ -1,6 +1,6 @@
 {
   "name": "cetb-node-api",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "main": "index.js",
   "scripts": {
     "start": "node dist/main/server.js",
